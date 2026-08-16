@@ -1,0 +1,672 @@
+<section
+  class="po-hero-fresh"
+  id="po-hero"
+  style="
+    --po-page-width: {{ section.settings.page_width }}px;
+    --po-cream: {{ section.settings.cream }};
+    --po-cream-deep: {{ section.settings.cream_deep }};
+    --po-forest: {{ section.settings.forest }};
+    --po-forest-deep: {{ section.settings.forest_deep }};
+    --po-terracotta: {{ section.settings.terracotta }};
+    --po-honey: {{ section.settings.honey }};
+    --po-ink: {{ section.settings.ink }};
+    --po-overlay-opacity: {{ section.settings.overlay_opacity | divided_by: 100.0 }};
+    --po-section-height: {{ section.settings.desktop_height }}px;
+  "
+>
+  <style>
+    .po-hero-fresh,
+    .po-hero-fresh * {
+      box-sizing: border-box;
+    }
+
+    .po-hero-fresh {
+      width: 100%;
+      min-height: var(--po-section-height);
+      position: relative;
+      overflow: hidden;
+      isolation: isolate;
+      background: var(--po-forest-deep);
+      color: var(--po-cream);
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .po-hero-fresh__media {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+    }
+
+    .po-hero-fresh__media img {
+      width: 100%;
+      height: 100%;
+      min-height: var(--po-section-height);
+      display: block;
+      object-fit: cover;
+      object-position: {{ section.settings.image_position }};
+      transform: scale(1.015);
+    }
+
+    .po-hero-fresh__media::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      background:
+        linear-gradient(
+          90deg,
+          rgba(7, 61, 39, calc(var(--po-overlay-opacity) + 0.18)) 0%,
+          rgba(7, 61, 39, var(--po-overlay-opacity)) 42%,
+          rgba(7, 61, 39, 0.34) 70%,
+          rgba(7, 61, 39, 0.12) 100%
+        ),
+        radial-gradient(circle at 18% 35%, rgba(241, 200, 88, 0.18), transparent 34%);
+      pointer-events: none;
+    }
+
+    .po-hero-fresh__container {
+      width: 100%;
+      max-width: var(--po-page-width);
+      min-height: var(--po-section-height);
+      margin: 0 auto;
+      padding: 0 26px;
+      position: relative;
+      z-index: 5;
+      display: flex;
+      align-items: center;
+    }
+
+    .po-hero-fresh__content {
+      width: 100%;
+      max-width: 720px;
+      padding: 76px 0 86px;
+    }
+
+    .po-hero-fresh__eyebrow {
+      width: fit-content;
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      min-height: 34px;
+      padding: 0 15px;
+      border-radius: 999px;
+      background: rgba(241, 200, 88, 0.16);
+      border: 1px solid rgba(241, 200, 88, 0.36);
+      color: var(--po-honey);
+      font-size: 12px;
+      line-height: 1;
+      font-weight: 850;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin-bottom: 24px;
+      backdrop-filter: blur(12px);
+    }
+
+    .po-hero-fresh__eyebrow span {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--po-honey);
+      box-shadow: 0 0 0 5px rgba(241, 200, 88, 0.13);
+    }
+
+    .po-hero-fresh__title {
+      margin: 0;
+      color: var(--po-cream);
+      font-family: Fraunces, Georgia, serif;
+      font-size: clamp(52px, 7.2vw, 104px);
+      line-height: 0.94;
+      letter-spacing: -0.058em;
+      font-weight: 650;
+      max-width: 720px;
+    }
+
+    .po-hero-fresh__title .accent {
+      color: var(--po-honey);
+      font-style: italic;
+      font-weight: 520;
+    }
+
+    .po-hero-fresh__text {
+      max-width: 610px;
+      margin: 26px 0 0;
+      color: rgba(247, 241, 228, 0.86);
+      font-size: clamp(16px, 1.35vw, 20px);
+      line-height: 1.68;
+      font-weight: 500;
+    }
+
+    .po-hero-fresh__actions {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+      margin-top: 34px;
+    }
+
+    .po-hero-fresh__btn {
+      min-height: 56px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      border-radius: 999px;
+      padding: 0 28px;
+      text-decoration: none;
+      font-size: 14px;
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease,
+        background 0.25s ease,
+        color 0.25s ease,
+        border-color 0.25s ease;
+      white-space: nowrap;
+    }
+
+    .po-hero-fresh__btn svg {
+      width: 16px;
+      height: 16px;
+      stroke-width: 2.4;
+    }
+
+    .po-hero-fresh__btn--primary {
+      background: var(--po-honey);
+      color: var(--po-forest-deep);
+      border: 1.5px solid var(--po-honey);
+      box-shadow: 0 18px 42px rgba(0, 0, 0, 0.22);
+    }
+
+    .po-hero-fresh__btn--primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 24px 54px rgba(0, 0, 0, 0.28);
+      background: #f5cf68;
+      border-color: #f5cf68;
+    }
+
+    .po-hero-fresh__btn--secondary {
+      background: rgba(247, 241, 228, 0.08);
+      color: var(--po-cream);
+      border: 1.5px solid rgba(247, 241, 228, 0.62);
+      backdrop-filter: blur(14px);
+    }
+
+    .po-hero-fresh__btn--secondary:hover {
+      transform: translateY(-2px);
+      background: rgba(247, 241, 228, 0.16);
+      border-color: rgba(247, 241, 228, 0.86);
+    }
+
+    .po-hero-fresh__benefits {
+      margin-top: 34px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      max-width: 780px;
+    }
+
+    .po-hero-fresh__benefit {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 36px;
+      padding: 0 14px;
+      border-radius: 999px;
+      background: rgba(247, 241, 228, 0.105);
+      border: 1px solid rgba(247, 241, 228, 0.18);
+      color: rgba(247, 241, 228, 0.9);
+      font-size: 13px;
+      line-height: 1;
+      font-weight: 750;
+      backdrop-filter: blur(10px);
+    }
+
+    .po-hero-fresh__benefit svg {
+      width: 15px;
+      height: 15px;
+      color: var(--po-honey);
+      flex: 0 0 15px;
+      stroke-width: 2.5;
+    }
+
+    @media (max-width: 990px) {
+      .po-hero-fresh {
+        --po-section-height: {{ section.settings.tablet_height }}px;
+      }
+
+      .po-hero-fresh__media img {
+        min-height: var(--po-section-height);
+      }
+
+      .po-hero-fresh__media::after {
+        background:
+          linear-gradient(
+            90deg,
+            rgba(7, 61, 39, 0.88) 0%,
+            rgba(7, 61, 39, 0.74) 56%,
+            rgba(7, 61, 39, 0.30) 100%
+          ),
+          radial-gradient(circle at 20% 35%, rgba(241, 200, 88, 0.16), transparent 36%);
+      }
+
+      .po-hero-fresh__container {
+        min-height: var(--po-section-height);
+      }
+
+      .po-hero-fresh__content {
+        max-width: 660px;
+        padding: 66px 0 72px;
+      }
+
+      .po-hero-fresh__title {
+        font-size: clamp(48px, 8vw, 78px);
+      }
+    }
+
+    @media (max-width: 640px) {
+      .po-hero-fresh {
+        --po-section-height: {{ section.settings.mobile_height }}px;
+      }
+
+      .po-hero-fresh__media img {
+        min-height: var(--po-section-height);
+        object-position: {{ section.settings.mobile_image_position }};
+      }
+
+      .po-hero-fresh__media::after {
+        background:
+          linear-gradient(
+            180deg,
+            rgba(7, 61, 39, 0.42) 0%,
+            rgba(7, 61, 39, 0.74) 38%,
+            rgba(7, 61, 39, 0.93) 100%
+          );
+      }
+
+      .po-hero-fresh__container {
+        min-height: var(--po-section-height);
+        padding: 0 16px;
+        align-items: flex-end;
+      }
+
+      .po-hero-fresh__content {
+        padding: 72px 0 34px;
+      }
+
+      .po-hero-fresh__eyebrow {
+        min-height: 31px;
+        padding: 0 12px;
+        font-size: 10.5px;
+        margin-bottom: 18px;
+      }
+
+      .po-hero-fresh__title {
+        font-size: clamp(42px, 13vw, 58px);
+        line-height: 0.98;
+        letter-spacing: -0.048em;
+      }
+
+      .po-hero-fresh__text {
+        margin-top: 20px;
+        font-size: 15.5px;
+        line-height: 1.58;
+      }
+
+      .po-hero-fresh__actions {
+        margin-top: 26px;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 12px;
+      }
+
+      .po-hero-fresh__btn {
+        width: 100%;
+        min-height: 52px;
+        font-size: 12.5px;
+        padding: 0 18px;
+      }
+
+      .po-hero-fresh__benefits {
+        margin-top: 24px;
+        gap: 8px;
+      }
+
+      .po-hero-fresh__benefit {
+        min-height: 33px;
+        padding: 0 11px;
+        font-size: 12px;
+      }
+    }
+
+    @media (max-width: 390px) {
+      .po-hero-fresh__title {
+        font-size: 40px;
+      }
+
+      .po-hero-fresh__text {
+        font-size: 14.5px;
+      }
+
+      .po-hero-fresh__benefit {
+        font-size: 11.5px;
+      }
+    }
+  </style>
+
+  <div class="po-hero-fresh__media">
+    {%- if section.settings.hero_image != blank -%}
+      {{ section.settings.hero_image | image_url: width: 2400 | image_tag: loading: 'eager', alt: section.settings.image_alt }}
+    {%- else -%}
+      <img
+        src="https://cdn.shopify.com/s/files/1/0787/2761/0619/files/hero-meals.jpg?v=1780297793"
+        alt="{{ section.settings.image_alt | escape }}"
+        loading="eager"
+      >
+    {%- endif -%}
+  </div>
+
+  <div class="po-hero-fresh__container">
+    <div class="po-hero-fresh__content">
+      {%- if section.settings.eyebrow != blank -%}
+        <div class="po-hero-fresh__eyebrow">
+          <span></span>
+          {{ section.settings.eyebrow }}
+        </div>
+      {%- endif -%}
+
+      {%- if section.settings.heading != blank -%}
+        <h1 class="po-hero-fresh__title">
+          {{ section.settings.heading }}
+        </h1>
+      {%- endif -%}
+
+      {%- if section.settings.subheading != blank -%}
+        <div class="po-hero-fresh__text">
+          {{ section.settings.subheading }}
+        </div>
+      {%- endif -%}
+
+      <div class="po-hero-fresh__actions">
+        {%- if section.settings.primary_label != blank -%}
+          <a href="{{ section.settings.primary_link }}" class="po-hero-fresh__btn po-hero-fresh__btn--primary">
+            {{ section.settings.primary_label }}
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M5 12h13" stroke="currentColor" stroke-linecap="round"/>
+              <path d="M13 6l6 6-6 6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </a>
+        {%- endif -%}
+
+        {%- if section.settings.secondary_label != blank -%}
+          <a href="{{ section.settings.secondary_link }}" class="po-hero-fresh__btn po-hero-fresh__btn--secondary">
+            {{ section.settings.secondary_label }}
+          </a>
+        {%- endif -%}
+      </div>
+
+      <div class="po-hero-fresh__benefits">
+        {%- for block in section.blocks -%}
+          <div class="po-hero-fresh__benefit" {{ block.shopify_attributes }}>
+            <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M5 12.5l4.2 4L19 7" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            {{ block.settings.text }}
+          </div>
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "PO Hero Fresh",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "page_width",
+      "label": "Page width",
+      "default": 1280,
+      "min": 960,
+      "max": 1600,
+      "step": 20,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "desktop_height",
+      "label": "Desktop height",
+      "default": 720,
+      "min": 520,
+      "max": 900,
+      "step": 20,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "tablet_height",
+      "label": "Tablet height",
+      "default": 660,
+      "min": 520,
+      "max": 820,
+      "step": 20,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mobile_height",
+      "label": "Mobile height",
+      "default": 680,
+      "min": 560,
+      "max": 820,
+      "step": 20,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Image"
+    },
+    {
+      "type": "image_picker",
+      "id": "hero_image",
+      "label": "Hero lifestyle image"
+    },
+    {
+      "type": "text",
+      "id": "image_alt",
+      "label": "Image alt text",
+      "default": "Vibrant organic meals with fresh seasonal produce"
+    },
+    {
+      "type": "select",
+      "id": "image_position",
+      "label": "Desktop image position",
+      "default": "center center",
+      "options": [
+        { "value": "center center", "label": "Center" },
+        { "value": "left center", "label": "Left" },
+        { "value": "right center", "label": "Right" },
+        { "value": "center top", "label": "Top" },
+        { "value": "center bottom", "label": "Bottom" }
+      ]
+    },
+    {
+      "type": "select",
+      "id": "mobile_image_position",
+      "label": "Mobile image position",
+      "default": "center center",
+      "options": [
+        { "value": "center center", "label": "Center" },
+        { "value": "left center", "label": "Left" },
+        { "value": "right center", "label": "Right" },
+        { "value": "center top", "label": "Top" },
+        { "value": "center bottom", "label": "Bottom" }
+      ]
+    },
+    {
+      "type": "range",
+      "id": "overlay_opacity",
+      "label": "Overlay strength",
+      "default": 62,
+      "min": 20,
+      "max": 90,
+      "step": 2,
+      "unit": "%"
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "eyebrow",
+      "label": "Eyebrow",
+      "default": "Weekly organic meals"
+    },
+    {
+      "type": "textarea",
+      "id": "heading",
+      "label": "Headline",
+      "default": "Eat Fresh. Feel Good. <span class=\"accent\">Glow More.</span>"
+    },
+    {
+      "type": "textarea",
+      "id": "subheading",
+      "label": "Subheadline",
+      "default": "Fresh organic meals delivered weekly featuring responsibly sourced proteins, seasonal ingredients, no seed oils, and locally sourced ingredients whenever possible."
+    },
+    {
+      "type": "text",
+      "id": "primary_label",
+      "label": "Primary button label",
+      "default": "Start Your Order"
+    },
+    {
+      "type": "url",
+      "id": "primary_link",
+      "label": "Primary button link"
+    },
+    {
+      "type": "text",
+      "id": "secondary_label",
+      "label": "Secondary button label",
+      "default": "View This Week's Menu"
+    },
+    {
+      "type": "url",
+      "id": "secondary_link",
+      "label": "Secondary button link"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "cream",
+      "label": "Cream",
+      "default": "#F7F1E4"
+    },
+    {
+      "type": "color",
+      "id": "cream_deep",
+      "label": "Cream deep",
+      "default": "#EEE1C9"
+    },
+    {
+      "type": "color",
+      "id": "forest",
+      "label": "Forest",
+      "default": "#2F7A4E"
+    },
+    {
+      "type": "color",
+      "id": "forest_deep",
+      "label": "Forest deep",
+      "default": "#073D27"
+    },
+    {
+      "type": "color",
+      "id": "terracotta",
+      "label": "Terracotta",
+      "default": "#C96E3C"
+    },
+    {
+      "type": "color",
+      "id": "honey",
+      "label": "Honey",
+      "default": "#F1C858"
+    },
+    {
+      "type": "color",
+      "id": "ink",
+      "label": "Ink",
+      "default": "#1E2B21"
+    }
+  ],
+  "blocks": [
+    {
+      "type": "benefit",
+      "name": "Quick benefit",
+      "settings": [
+        {
+          "type": "text",
+          "id": "text",
+          "label": "Benefit text",
+          "default": "Organic Ingredients"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "PO Hero Fresh",
+      "blocks": [
+        {
+          "type": "benefit",
+          "settings": {
+            "text": "Organic Ingredients"
+          }
+        },
+        {
+          "type": "benefit",
+          "settings": {
+            "text": "No Seed Oils"
+          }
+        },
+        {
+          "type": "benefit",
+          "settings": {
+            "text": "Seasonal Menus"
+          }
+        },
+        {
+          "type": "benefit",
+          "settings": {
+            "text": "Fresh, Never Frozen"
+          }
+        },
+        {
+          "type": "benefit",
+          "settings": {
+            "text": "Locally Sourced Whenever Possible"
+          }
+        },
+        {
+          "type": "benefit",
+          "settings": {
+            "text": "Flexible Subscriptions"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

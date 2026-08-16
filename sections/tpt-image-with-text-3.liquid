@@ -1,0 +1,751 @@
+{% comment %} Section layout style {% endcomment %}
+{{ 'tpt-section.css' | asset_url | stylesheet_tag }}
+
+{% comment %} Section configuration {% endcomment %}
+{%- render 'tpt-section-setting', section: section -%}
+
+{%- if section.index and section.settings.section_lazyload -%}
+  <script src="{{ 'tpt-section-lazyload.js' | asset_url }}" defer="defer"></script>
+
+  <tpt-section-lazyload data-url="?section_id={{ section.id }}">
+    <div data-lazyload-element></div>
+    <span class="tpt-section_loader"></span>
+  </tpt-section-lazyload>
+{%- else -%}
+  {{ 'tpt-swiper.min.css' | asset_url | stylesheet_tag }}
+  {{ 'tpt-grid.css' | asset_url | stylesheet_tag }}
+
+  {%- liquid
+    assign fetch_priority = 'auto'
+    if section.index == 1
+      assign fetch_priority = 'high'
+    endif
+  -%}
+
+  {% style %}
+    .tpt-image-with-text-3 .tpt-grid {
+      margin-bottom: 0;
+    }
+    .tpt-image-with-text-3 .tpt-grid_item {
+      position: relative;
+      flex-grow: 1;
+      flex-shrink: 0;
+    }
+    .tpt-image-with-text-3__content--mobile-right > * {
+      align-self: flex-end;
+      text-align: right;
+    }
+    .tpt-image-with-text-3__content--mobile-center > * {
+      align-self: center;
+      text-align: center;
+    }
+    @media screen and (min-width: 750px) {
+      .tpt-image-with-text-3__grid--reverse {
+        flex-direction: row-reverse;
+      }
+      .tpt-image-with-text-3--overlap .tpt-image-with-text-3__media-item--top {
+        align-self: flex-start;
+      }
+      .tpt-image-with-text-3--overlap .tpt-image-with-text-3__media-item--middle {
+        align-self: center;
+      }
+      .tpt-image-with-text-3--overlap .tpt-image-with-text-3__media-item--bottom {
+        align-self: flex-end;
+      }
+      .tpt-image-with-text-3__content--desktop-right > * {
+        align-self: flex-end;
+        text-align: right;
+      }
+      .tpt-image-with-text-3__content--desktop-left > * {
+        align-self: flex-start;
+        text-align: left;
+      }
+      .tpt-image-with-text-3__content--desktop-center > * {
+        align-self: center;
+        text-align: center;
+      }
+    }
+    .tpt-image-with-text-3__content {
+      align-items: flex-start;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      justify-content: center;
+      align-self: center;
+      padding: 1rem;
+      position: relative;
+      z-index: 1;
+    }
+    @media screen and (min-width: 750px) {
+      padding: 9rem 1rem 16rem;
+    }
+    .tpt-image-with-text-3__media {
+      height: 29.4rem;
+      min-height: 100%;
+      overflow: hidden;
+      position: relative;
+    }
+    .tpt-image-with-text-3__media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    /* Image Shape Styles */
+    .tpt-image-with-text-3__media--shape-circle img {
+      border-radius: 50%;
+    }
+    .tpt-image-with-text-3__media--shape-square img {
+      border-radius: {{ section.settings.image_border_radius }}px;
+    }
+    .tpt-image-with-text-3__media--shape-rounded img {
+      border-radius: 16px;
+    }
+    .tpt-image-with-text-3__media--shape-polygon img {
+      clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+      object-position: center;
+    }
+    .tpt-image-with-text-3__media--shape-arch img {
+      border-radius: 50% 50% 0 0;
+      object-position: center;
+    }
+    .tpt-image-with-text-3__media--shape-hexagon img {
+      clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);
+      object-position: center;
+    }
+    .tpt-image-with-text-3__media--shape-octagon img {
+      clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
+      object-position: center;
+    }
+    .tpt-image-with-text-3__media--shape-star img {
+      clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%);
+      object-position: center;
+    }
+    .tpt-image-with-text-3__media--shape-diamond img {
+      clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+      object-position: center;
+    }
+    .tpt-image-with-text-3__media--small {
+      height: 29.4rem;
+    }
+    .tpt-image-with-text-3__media--medium {
+      height: 39.6rem;
+    }
+    .tpt-image-with-text-3__media--large {
+      height: 49.5rem;
+    }
+    @media screen and (min-width: 750px) {
+      .tpt-image-with-text-3__media {
+        height: 61.4rem;
+      }
+      .tpt-image-with-text-3__media--small {
+        height: 61.4rem;
+      }
+      .tpt-image-with-text-3__media--medium {
+        height: 76rem;
+      }
+      .tpt-image-with-text-3__media--large {
+        height: 89.5rem;
+      }
+    }
+    .tpt-image-with-text-3--overlap .tpt-image-with-text-3__grid--reverse .tpt-image-with-text-3__text-item {
+      justify-content: flex-end;
+    }
+    .tpt-image-with-text-3--overlap .tpt-image-with-text-3__media-item--top {
+      align-self: flex-start;
+    }
+    .tpt-image-with-text-3--overlap .tpt-image-with-text-3__media-item--middle {
+      align-self: center;
+    }
+    .tpt-image-with-text-3--overlap .tpt-image-with-text-3__media-item--bottom {
+      align-self: flex-end;
+    }
+    .tpt-image-with-text-3__media-item--small,
+    .tpt-image-with-text-3__media-item--large + .tpt-image-with-text-3__text-item {
+      flex-grow: 0 !important;
+    }
+    .tpt-image-with-text-3__media-item--medium {
+      width: 66%;
+    }
+    .tpt-image-with-text-3 .global-media-settings {
+      overflow: hidden !important;
+      border: none;
+    }
+    h2.tpt-image-with-text-3__heading {
+      margin-top: 0;
+      margin-bottom: 1.6rem;
+      font-size: 4.2rem;
+      font-weight: 500;
+      line-height: normal;
+      color: var(--heading-color);
+    }
+    .tpt-image-with-text-3__text {
+      margin-top: 1.6rem;
+      margin-bottom: 3.6rem;
+      font-size: 1.6rem;
+      font-weight: 400;
+      color: var(--paragraph-color);
+    }
+    .tpt-image-with-text-3 .button {
+      color: var(--button-text-color);
+      background-color: var(--button-background-color);
+      border-color: var(--outline-button-color);
+    }
+    .tpt-image-with-text-3 .button svg {
+      margin-inline-start: 8px;
+    }
+    .tpt-image-with-text-3 .button:after {
+      display: none;
+    }
+    .tpt-image-with-text-3 .button--secondary {
+      border-width: 1px;
+      border-style: solid;
+    }
+    .tpt-image-with-text-3 .swiper-wrapper {
+      padding-bottom: 1rem;
+      padding-top: 1rem;
+      height: unset;
+    }
+    @media screen and (min-width: 750px) {
+      .tpt-image-with-text-3 .swiper-wrapper {
+        padding-bottom: 3rem;
+        padding-top: 16rem;
+      }
+      .tpt-image-with-text-3 .swiper-slide {
+      }
+    }
+    .tpt-3-swiper-pagination {
+      display: flex;
+      justify-content: center;
+    }
+    .tpt-3-swiper-button-prev,
+    .tpt-3-swiper-button-next {
+      width: 36px;
+      height: 36px;
+      margin-inline-end: 15px;
+    }
+    .tpt-3-swiper-pagination .swiper-button-disabled svg path {
+      stroke: lightgray;
+    }
+  {% endstyle %}
+  <div class="tpt-section_container gradient" style="border-radius:{{ section.settings.border_radius }}px">
+    <div class="tpt-section_content page-width">
+      {% comment %} Section header {% endcomment %}
+      {%- render 'tpt-section-header', section: section -%}
+
+      <div class="tpt-section-body">
+        {% comment %} Section body {% endcomment %}
+        <div
+          class="tpt-image-with-text-3 tpt-image-with-text-3--{{ section.settings.content_layout }}"
+          style="
+            --heading-color: {{ section.settings.heading_color }}; --paragraph-color: {{ section.settings.paragraph_color }};
+            --button-background-color: {{ section.settings.button_background_color }}; --button-text-color: {{ section.settings.button_text_color }};
+            --outline-button-color: {{ section.settings.outline_button_color }}
+          "
+        >
+          <div class="tpt-image-with-text-3__grid tpt-grid mobile-1-columns {% if section.settings.desktop_image_width == 'medium' %}desktop-2-columns{% else %}desktop-3-columns{% endif %} tablet-2-columns {% if section.settings.layout == 'text_first' %} tpt-image-with-text-3__grid--reverse{% endif %}">
+            <div class="tpt-image-with-text-3__media-item tpt-image-with-text-3__media-item--{{ section.settings.desktop_image_width }} tpt-image-with-text-3__media-item--{{ section.settings.desktop_content_position }} tpt-grid_item">
+              <div
+                class="tpt-image-with-text-3__media tpt-image-with-text-3__media--{{ section.settings.height }} tpt-image-with-text-3__media--shape-{{ section.settings.image_shape }} global-media-settings{% unless remove_color_classes %} {% else %} background-transparent{% endunless %}{% if section.settings.image != blank %} media{% else %} tpt-image-with-text-3__media--placeholder placeholder{% endif %}{% if section.settings.image_behavior != 'none' %} animate--{{ section.settings.image_behavior }}{% endif %}"
+                style="
+                  {% if section.settings.height == 'adapt' and section.settings.image != blank %}
+                    padding-bottom: {{ 1 | divided_by: section.settings.image.aspect_ratio | times: 100 }}%;
+                  {% endif %}
+                  {% if section.settings.image_shape == 'rounded' or section.settings.image_shape == 'square' %}
+                    border-radius: {{ section.settings.image_border_radius }}px;
+                  {% endif %}
+                "
+              >
+                {%- if section.settings.image != blank -%}
+                  {%- if section.settings.image_behavior == 'ambient'
+                    or section.settings.image_behavior == 'zoom-in'
+                  -%}
+                    {%- assign widths = '198, 432, 642, 900, 1284, 1800' -%}
+                    {%- capture sizes -%}
+                  (min-width: {{ settings.page_width }}px) {{ settings.page_width | minus: 100 | divided_by: 1.6667 }}px,
+                  (min-width: 750px) calc((100vw - 130px) / 1.667), calc((100vw - 50px) / 1.667)
+                {%- endcapture -%}
+                  {%- else -%}
+                    {%- assign widths = '165, 360, 535, 750, 1070, 1500' -%}
+                    {%- capture sizes -%}
+                  (min-width: {{ settings.page_width }}px) {{ settings.page_width | minus: 100 | divided_by: 2 }}px,
+                  (min-width: 750px) calc((100vw - 130px) / 2), calc((100vw - 50px) / 2)
+                {%- endcapture -%}
+                  {%- endif -%}
+                  {{
+                    section.settings.image
+                    | image_url: width: 1500
+                    | image_tag: sizes: sizes, widths: widths, fetchpriority: fetch_priority
+                  }}
+                {%- else -%}
+                  <img
+                    class="tpt-image-placehoder-3"
+                    alt="{{ shop.name }}"
+                    src="https://cdn.shopify.com/s/files/1/0597/3783/3627/files/image-w-text-banner2.png?v=1720693625"
+                  >
+                {%- endif -%}
+              </div>
+            </div>
+            <div class="tpt-image-with-text-3__text-item tpt-grid_item">
+              <div
+                id="TptImageWithText--{{ section.id }}"
+                class="tpt-image-with-text-3__content tpt-image-with-text-3__content--{{ section.settings.desktop_content_position }} tpt-image-with-text-3__content--desktop-{{ section.settings.desktop_content_alignment }} tpt-image-with-text-3__content--mobile-{{ section.settings.mobile_content_alignment }} tpt-image-with-text-3__content--{{ section.settings.height }} content-container{% unless remove_color_classes %} {% else %} background-transparent{% endunless %}"
+              >
+                <div class="swiper mySwiper" id="{{ section.id }}-tptSwiper" style="width: 100%; height: 100%;">
+                  <div class="swiper-wrapper">
+                    {%- for block in section.blocks -%}
+                      <div class="swiper-slide">
+                        <script>
+                          /* aaabbb {{ block.settings }} */
+                        </script>
+                        {% if block.settings.heading %}
+                          <h2
+                            class="tpt-image-with-text-3__heading inline-richtext {{ block.settings.heading_size }}"
+                            {{ block.shopify_attributes }}
+                          >
+                            {{ block.settings.heading }}
+                          </h2>
+                        {% endif %}
+
+                        {% if block.settings.text %}
+                          <div
+                            class="tpt-image-with-text-3__text rte {{ block.settings.text_style }}"
+                            {{ block.shopify_attributes }}
+                          >
+                            {{ block.settings.text }}
+                          </div>
+                        {% endif %}
+                        {%- if block.settings.button_label != blank -%}
+                          <a
+                            {% if block.settings.button_link == blank %}
+                              role="link" aria-disabled="true" href="#"
+                            {% else %}
+                              href="{{ block.settings.button_link }}"
+                            {% endif %}
+                            class="button{% if block.settings.button_style_secondary %} button--secondary{% else %} button--primary{% endif %}"
+                            {{ block.shopify_attributes }}
+                            style="border-radius: {{ section.settings.button_border_radius }}px"
+                          >
+                            {{ block.settings.button_label | escape }}
+                          </a>
+                        {%- endif -%}
+                      </div>
+                    {%- endfor -%}
+                  </div>
+                  <div class="tpt-3-swiper-pagination">
+                    <div class="tpt-3-swiper-button-prev">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36" fill="none">
+                        <path d="M29.25 18H6.75M6.75 18L15.1875 9M6.75 18L15.1875 27" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </div>
+                    <div class="tpt-3-swiper-button-next">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36" fill="none">
+                        <path d="M6.75 18H29.25M29.25 18L20.8125 9M29.25 18L20.8125 27" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% comment %} End section body {% endcomment %}
+      </div>
+    </div>
+  </div>
+  <script>
+    if (!window.tptStartSwiper3)
+      window.tptStartSwiper3 = function (section_id) {
+        var swiper = new Swiper("#" + section_id + "-tptSwiper", {
+          navigation: {
+            nextEl: ".tpt-3-swiper-button-next",
+            prevEl: ".tpt-3-swiper-button-prev",
+          },
+        });
+      }
+    if (!window.Swiper) {
+      var head = document.head;
+      var script = document.createElement('script');
+      script.type = 'text/javascript';
+      script.src = '{{ 'tpt-swiper.min.js' | asset_url }}';
+      script.onload = function() {window.tptStartSwiper3('{{ section.id }}');}
+      head.appendChild(script);
+    } else {
+      window.tptStartSwiper3('{{ section.id }}');
+    }
+  </script>
+{%- endif -%}{%- unless content_for_header contains 'tapita-section-script-tags' -%}{% style %}#shopify-section-{{ section.id }}{display: none !important;}{% endstyle %}{%- endunless -%}
+
+
+{% schema %}
+{
+  "name": "Tpt - Image with Text #3",
+  "class": "section tpt-section tpt-image-w-text-3",
+  "tag": "section",
+
+  "settings": [
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Image"
+    },
+    {
+      "type": "range",
+      "id": "image_border_radius",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Image Border Radius (applies when Image Shape is set to Square)",
+      "default": 0
+    },
+    {
+      "type": "select",
+      "id": "image_shape",
+      "options": [
+        {
+          "value": "square",
+          "label": "Square"
+        },
+        {
+          "value": "circle",
+          "label": "Circle"
+        },
+        {
+          "value": "arch",
+          "label": "Arch (Dome)"
+        },
+        {
+          "value": "polygon",
+          "label": "Polygon (8-sided)"
+        },
+        {
+          "value": "hexagon",
+          "label": "Hexagon"
+        },
+        {
+          "value": "octagon",
+          "label": "Octagon"
+        },
+        {
+          "value": "diamond",
+          "label": "Diamond"
+        },
+        {
+          "value": "star",
+          "label": "Star"
+        }
+      ],
+      "default": "arch",
+      "label": "Image Shape",
+      "info": "Choose the display shape for the image"
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "label": "Button Border radius",
+      "default": 8
+    },
+    {
+      "type": "select",
+      "id": "height",
+      "options": [
+        {
+          "value": "adapt",
+          "label": "Adapt to image"
+        },
+        {
+          "value": "small",
+          "label": "Small"
+        },
+        {
+          "value": "medium",
+          "label": "Medium"
+        },
+        {
+          "value": "large",
+          "label": "Large"
+        }
+      ],
+      "default": "adapt",
+      "label": "Image height"
+    },
+    {
+      "type": "select",
+      "id": "layout",
+      "options": [
+        {
+          "value": "image_first",
+          "label": "Image first"
+        },
+        {
+          "value": "text_first",
+          "label": "Image second"
+        }
+      ],
+      "default": "image_first",
+      "label": "Desktop image placement",
+      "info": "Image first is the default mobile layout."
+    },
+    {
+      "type": "header",
+      "content": "Section layout"
+    },
+    {
+      "type": "select",
+      "id": "desktop_content_alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "left",
+      "label": "Desktop content alignment"
+    },
+    {
+      "type": "select",
+      "id": "mobile_content_alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "left",
+      "label": "Mobile content alignment"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Title color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "paragraph_color",
+      "label": "Paragraph color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_background_color",
+      "label": "Button background",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "button_text_color",
+      "label": "Button text",
+      "default": "#ffffff"
+    },
+    {
+      "type": "color",
+      "id": "outline_button_color",
+      "label": "Outline button",
+      "default": "#000000"
+    },
+    {
+      "type": "checkbox",
+      "id": "section_full_width",
+      "label": "Section full width",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "section_max_width",
+      "min": 1200,
+      "max": 1900,
+      "step": 20,
+      "unit": "px",
+      "label": "Section max width",
+      "default": 1600
+    },
+    {
+      "type": "checkbox",
+      "id": "content_full_width",
+      "label": "Content full width",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "content_max_width",
+      "min": 800,
+      "max": 1900,
+      "step": 20,
+      "unit": "px",
+      "label": "Content max width",
+      "default": 1440
+    },
+    {
+      "type": "range",
+      "id": "padding_desktop",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "label": "Padding desktop",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_tablet_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding tablet, mobile",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "margin_desktop",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin desktop",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "margin_tablet_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Margin tablet, mobile",
+      "default": 40
+    },
+    {
+      "type": "checkbox",
+      "id": "section_lazyload",
+      "label": "Section lazyload",
+      "default": false
+    }
+  ],
+  "blocks": [
+    {
+      "type": "item",
+      "name": "Image with text Item",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "item_image",
+          "label": "Image"
+        },
+        {
+          "type": "checkbox",
+          "id": "image_preload",
+          "label": "Preload image",
+          "default": false
+        },
+        {
+          "type": "inline_richtext",
+          "id": "heading",
+          "default": "Decorate Your House",
+          "label": "Heading"
+        },
+        {
+          "type": "richtext",
+          "id": "text",
+          "label": "Description",
+          "default": "<p>Lorem ipsum dolor sit amet consectetur. Dictum felis tellus a semper feugiat donec ullamcorper leo ipsum. Quis sit sit eget condimentum quam egestas et lobortis orci. Et dui turpis est risus. Eleifend sodales purus morbi sed sed aliquam arcu a.</p>"
+        },
+        {
+          "type": "select",
+          "id": "alignment",
+          "label": "Content alignment",
+          "options": [
+            {
+              "value": "left",
+              "label": "Left"
+            },
+            {
+              "value": "center",
+              "label": "Center"
+            },
+            {
+              "value": "right",
+              "label": "Right"
+            }
+          ],
+          "default": "left"
+        },
+        {
+          "type": "text",
+          "id": "button_label",
+          "default": "Show now",
+          "label": "Button label"
+        },
+        {
+          "type": "url",
+          "id": "button_link",
+          "label": "Button link"
+        },
+        {
+          "type": "checkbox",
+          "id": "button_style_secondary",
+          "default": false,
+          "label": "Use outline button style"
+        },
+        {
+          "type": "select",
+          "id": "layout",
+          "options": [
+            {
+              "value": "image_first",
+              "label": "Image first"
+            },
+            {
+              "value": "text_first",
+              "label": "Image second"
+            }
+          ],
+          "default": "image_first",
+          "label": "Image first",
+          "info": "Image first is the default mobile layout."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Tpt - Image with text #3",
+      "settings": {
+        "button_border_radius": 50,
+        "image_border_radius": 16
+      },
+      "blocks": [
+        {
+          "type": "item"
+        },
+        {
+          "type": "item"
+        },
+        {
+          "type": "item"
+        }
+      ]
+    }
+  ]
+} 
+{% endschema %}

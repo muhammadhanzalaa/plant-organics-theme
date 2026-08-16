@@ -1,0 +1,744 @@
+{%- liquid
+  assign per_row = 4
+  assign mobile_flush_grid = false
+
+  for block in section.blocks
+    if block.type == 'product_grid'
+      assign per_row = block.settings.per_row
+      assign mobile_flush_grid = block.settings.mobile_flush_grid
+    endif
+  endfor
+
+  assign products_per_page = 250
+-%}
+
+<style>
+  .po-weekly-menu-page {
+    width: 100%;
+  }
+
+  .po-weekly-menu-category {
+    margin-bottom: 48px;
+  }
+
+  .po-weekly-menu-category:last-child {
+    margin-bottom: 0;
+  }
+
+  .po-weekly-menu-category__head {
+    margin-bottom: 22px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--colorBorder, #e8e8e1);
+  }
+
+  .po-weekly-menu-category__title {
+    margin: 0;
+    color: inherit;
+    font-size: 28px;
+    line-height: 1.15;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+  }
+
+  .po-weekly-menu-category__subtitle {
+    margin: 7px 0 0;
+    color: inherit;
+    opacity: 0.68;
+    font-size: 14px;
+    line-height: 1.45;
+  }
+
+  .po-weekly-menu-subcategory {
+    margin-bottom: 34px;
+  }
+
+  .po-weekly-menu-subcategory:last-child {
+    margin-bottom: 0;
+  }
+
+  .po-weekly-menu-subcategory__title {
+    margin: 0 0 18px;
+    color: inherit;
+    font-size: 20px;
+    line-height: 1.2;
+    font-weight: 700;
+  }
+
+  .po-weekly-menu-empty {
+    margin: 0 0 24px;
+    padding: 16px 18px;
+    border: 1px dashed var(--colorBorder, #e8e8e1);
+    color: inherit;
+    opacity: 0.72;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  .po-weekly-menu-direct-cats {
+    margin: 0 0 34px;
+    padding: 18px 0 22px;
+    border-bottom: 1px solid var(--colorBorder, #e8e8e1);
+  }
+
+  .po-weekly-menu-direct-cats__head {
+    margin: 0 0 14px;
+  }
+
+  .po-weekly-menu-direct-cats__title {
+    margin: 0;
+    color: inherit;
+    font-size: 18px;
+    line-height: 1.25;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  .po-weekly-menu-direct-cats__list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+  }
+
+  .po-weekly-menu-direct-cat {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 42px;
+    padding: 10px 16px;
+    border: 1px solid var(--colorBorder, #e8e8e1);
+    border-radius: 999px;
+    color: inherit;
+    background: var(--colorBody, #fff);
+    font-size: 14px;
+    line-height: 1.2;
+    font-weight: 600;
+    text-decoration: none;
+    transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+  }
+
+  .po-weekly-menu-direct-cat:hover {
+    color: inherit;
+    border-color: currentColor;
+    transform: translateY(-1px);
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.06);
+  }
+
+  .po-weekly-menu-page .grid-product,
+  .po-weekly-menu-page .grid__item,
+  .po-weekly-menu-page .grid-product__content,
+  .po-weekly-menu-page .grid-product__meta {
+    min-width: 0;
+  }
+
+  .po-weekly-menu-page .grid-product__title,
+  .po-weekly-menu-page .grid-product__price {
+    white-space: normal !important;
+    word-break: normal !important;
+    overflow-wrap: normal !important;
+  }
+
+  @media (max-width: 749px) {
+    .po-weekly-menu-category {
+      margin-bottom: 40px;
+    }
+
+    .po-weekly-menu-category__head {
+      margin-bottom: 18px;
+    }
+
+    .po-weekly-menu-category__title {
+      font-size: 24px;
+    }
+
+    .po-weekly-menu-subcategory__title {
+      font-size: 18px;
+      margin-bottom: 14px;
+    }
+
+
+    .po-weekly-menu-direct-cats {
+      margin-bottom: 28px;
+      padding-bottom: 18px;
+    }
+
+    .po-weekly-menu-direct-cat {
+      min-height: 40px;
+      padding: 9px 14px;
+      font-size: 13px;
+    }
+    {% if mobile_flush_grid %}
+      .po-weekly-menu-page .grid {
+        margin-left: -17px;
+        margin-right: -17px;
+      }
+    {% endif %}
+  }
+</style>
+
+<div
+  id="CollectionAjaxResult"
+  class="collection-content"
+  data-section-id="{{ section.id }}"
+  data-section-type="collection-template"
+>
+  <div id="CollectionAjaxContent">
+    <div class="page-width">
+      <div class="po-weekly-menu-page collection-grid__wrapper">
+
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'collection_description' and collection.description != blank -%}
+            <div class="rte" style="margin-bottom: 32px;" {{ block.shopify_attributes }}>
+              {{ collection.description }}
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+
+
+        {%- if section.settings.po_show_direct_category_links -%}
+          {%- assign direct_category_count = 0 -%}
+
+          {%- for block in section.blocks -%}
+            {%- if block.type == 'po_direct_category' -%}
+              {%- assign direct_collection = block.settings.po_direct_collection -%}
+              {%- assign direct_title = block.settings.po_direct_title | strip -%}
+              {%- assign direct_url = block.settings.po_direct_url | strip -%}
+
+              {%- if direct_title == blank and direct_collection != blank -%}
+                {%- assign direct_title = direct_collection.title -%}
+              {%- endif -%}
+
+              {%- if direct_url == blank and direct_collection != blank -%}
+                {%- assign direct_url = direct_collection.url -%}
+              {%- endif -%}
+
+              {%- if direct_title != blank and direct_url != blank -%}
+                {%- assign direct_category_count = direct_category_count | plus: 1 -%}
+              {%- endif -%}
+            {%- endif -%}
+          {%- endfor -%}
+
+          {%- if direct_category_count > 0 -%}
+            <nav class="po-weekly-menu-direct-cats" aria-label="Menu categories">
+              {%- if section.settings.po_direct_category_heading != blank -%}
+                <div class="po-weekly-menu-direct-cats__head">
+                  <h2 class="po-weekly-menu-direct-cats__title">{{ section.settings.po_direct_category_heading }}</h2>
+                </div>
+              {%- endif -%}
+
+              <div class="po-weekly-menu-direct-cats__list">
+                {%- for block in section.blocks -%}
+                  {%- if block.type == 'po_direct_category' -%}
+                    {%- assign direct_collection = block.settings.po_direct_collection -%}
+                    {%- assign direct_title = block.settings.po_direct_title | strip -%}
+                    {%- assign direct_url = block.settings.po_direct_url | strip -%}
+
+                    {%- if direct_title == blank and direct_collection != blank -%}
+                      {%- assign direct_title = direct_collection.title -%}
+                    {%- endif -%}
+
+                    {%- if direct_url == blank and direct_collection != blank -%}
+                      {%- assign direct_url = direct_collection.url -%}
+                    {%- endif -%}
+
+                    {%- if direct_title != blank and direct_url != blank -%}
+                      <a
+                        class="po-weekly-menu-direct-cat"
+                        href="{{ direct_url }}"
+                        {{ block.shopify_attributes }}
+                      >
+                        {{ direct_title }}
+                      </a>
+                    {%- endif -%}
+                  {%- endif -%}
+                {%- endfor -%}
+              </div>
+            </nav>
+          {%- endif -%}
+        {%- endif -%}
+
+        {%- paginate collection.products by products_per_page -%}
+          {%- assign shown_product_ids = '' -%}
+
+          {%- assign main_categories = section.settings.po_main_categories | strip | newline_to_br | split: '<br />' -%}
+
+          {%- for category_row in main_categories -%}
+            {%- assign clean_row = category_row | strip -%}
+
+            {%- if clean_row != blank -%}
+              {%- assign category_parts = clean_row | split: '|' -%}
+              {%- assign category_title = category_parts[0] | strip -%}
+              {%- assign category_match = category_parts[1] | default: category_title | strip -%}
+              {%- assign category_count = 0 -%}
+
+              {%- for product in collection.products -%}
+                {%- assign product_matches_category = false -%}
+
+                {%- if section.settings.po_category_source == 'tag' -%}
+                  {%- if product.tags contains category_match -%}
+                    {%- assign product_matches_category = true -%}
+                  {%- endif -%}
+                {%- elsif section.settings.po_category_source == 'product_type' -%}
+                  {%- if product.type == category_match -%}
+                    {%- assign product_matches_category = true -%}
+                  {%- endif -%}
+                {%- else -%}
+                  {%- if product.tags contains category_match or product.type == category_match -%}
+                    {%- assign product_matches_category = true -%}
+                  {%- endif -%}
+                {%- endif -%}
+
+                {%- if product_matches_category -%}
+                  {%- assign category_count = category_count | plus: 1 -%}
+                {%- endif -%}
+              {%- endfor -%}
+
+              {%- if category_count > 0 or section.settings.po_show_empty_categories -%}
+                <section class="po-weekly-menu-category">
+                  <div class="po-weekly-menu-category__head">
+                    <h2 class="po-weekly-menu-category__title">{{ category_title }}</h2>
+                  </div>
+
+                  {%- if category_count > 0 -%}
+                    <div class="grid grid--uniform">
+                      {%- for product in collection.products -%}
+                        {%- assign product_matches_category = false -%}
+
+                        {%- if section.settings.po_category_source == 'tag' -%}
+                          {%- if product.tags contains category_match -%}
+                            {%- assign product_matches_category = true -%}
+                          {%- endif -%}
+                        {%- elsif section.settings.po_category_source == 'product_type' -%}
+                          {%- if product.type == category_match -%}
+                            {%- assign product_matches_category = true -%}
+                          {%- endif -%}
+                        {%- else -%}
+                          {%- if product.tags contains category_match or product.type == category_match -%}
+                            {%- assign product_matches_category = true -%}
+                          {%- endif -%}
+                        {%- endif -%}
+
+                        {%- if product_matches_category -%}
+                          {%- assign product_token = '|' | append: product.id | append: '|' -%}
+                          {%- unless shown_product_ids contains product_token -%}
+                            {%- assign shown_product_ids = shown_product_ids | append: product_token -%}
+                          {%- endunless -%}
+
+                          {%- render 'product-grid-item',
+                            product: product,
+                            per_row: per_row,
+                            quick_shop_enable: settings.quick_shop_enable
+                          -%}
+                        {%- endif -%}
+                      {%- endfor -%}
+                    </div>
+                  {%- else -%}
+                    <p class="po-weekly-menu-empty">No products found in this category yet.</p>
+                  {%- endif -%}
+                </section>
+              {%- endif -%}
+            {%- endif -%}
+          {%- endfor -%}
+
+          {%- if section.settings.po_show_addons -%}
+            {%- assign addon_categories = section.settings.po_addon_categories | strip | newline_to_br | split: '<br />' -%}
+            {%- assign addon_total_count = 0 -%}
+
+            {%- for addon_row in addon_categories -%}
+              {%- assign clean_addon_row = addon_row | strip -%}
+
+              {%- if clean_addon_row != blank -%}
+                {%- assign addon_parts = clean_addon_row | split: '|' -%}
+                {%- assign addon_match = addon_parts[1] | default: addon_parts[0] | strip -%}
+
+                {%- for product in collection.products -%}
+                  {%- assign product_matches_addon = false -%}
+
+                  {%- if section.settings.po_category_source == 'tag' -%}
+                    {%- if product.tags contains addon_match -%}
+                      {%- assign product_matches_addon = true -%}
+                    {%- endif -%}
+                  {%- elsif section.settings.po_category_source == 'product_type' -%}
+                    {%- if product.type == addon_match -%}
+                      {%- assign product_matches_addon = true -%}
+                    {%- endif -%}
+                  {%- else -%}
+                    {%- if product.tags contains addon_match or product.type == addon_match -%}
+                      {%- assign product_matches_addon = true -%}
+                    {%- endif -%}
+                  {%- endif -%}
+
+                  {%- if product_matches_addon -%}
+                    {%- assign addon_total_count = addon_total_count | plus: 1 -%}
+                  {%- endif -%}
+                {%- endfor -%}
+              {%- endif -%}
+            {%- endfor -%}
+
+            {%- if addon_total_count > 0 or section.settings.po_show_empty_categories -%}
+              <section class="po-weekly-menu-category po-weekly-menu-category--addons">
+                <div class="po-weekly-menu-category__head">
+                  <h2 class="po-weekly-menu-category__title">Add-Ons</h2>
+                  <p class="po-weekly-menu-category__subtitle">
+                    Breakfast, bakery, fresh-pressed juices, and family-style protein add-ons.
+                  </p>
+                </div>
+
+                {%- for addon_row in addon_categories -%}
+                  {%- assign clean_addon_row = addon_row | strip -%}
+
+                  {%- if clean_addon_row != blank -%}
+                    {%- assign addon_parts = clean_addon_row | split: '|' -%}
+                    {%- assign addon_title = addon_parts[0] | strip -%}
+                    {%- assign addon_match = addon_parts[1] | default: addon_title | strip -%}
+                    {%- assign addon_count = 0 -%}
+
+                    {%- for product in collection.products -%}
+                      {%- assign product_matches_addon = false -%}
+
+                      {%- if section.settings.po_category_source == 'tag' -%}
+                        {%- if product.tags contains addon_match -%}
+                          {%- assign product_matches_addon = true -%}
+                        {%- endif -%}
+                      {%- elsif section.settings.po_category_source == 'product_type' -%}
+                        {%- if product.type == addon_match -%}
+                          {%- assign product_matches_addon = true -%}
+                        {%- endif -%}
+                      {%- else -%}
+                        {%- if product.tags contains addon_match or product.type == addon_match -%}
+                          {%- assign product_matches_addon = true -%}
+                        {%- endif -%}
+                      {%- endif -%}
+
+                      {%- if product_matches_addon -%}
+                        {%- assign addon_count = addon_count | plus: 1 -%}
+                      {%- endif -%}
+                    {%- endfor -%}
+
+                    {%- if addon_count > 0 or section.settings.po_show_empty_categories -%}
+                      <div class="po-weekly-menu-subcategory">
+                        <h3 class="po-weekly-menu-subcategory__title">{{ addon_title }}</h3>
+
+                        {%- if addon_count > 0 -%}
+                          <div class="grid grid--uniform">
+                            {%- for product in collection.products -%}
+                              {%- assign product_matches_addon = false -%}
+
+                              {%- if section.settings.po_category_source == 'tag' -%}
+                                {%- if product.tags contains addon_match -%}
+                                  {%- assign product_matches_addon = true -%}
+                                {%- endif -%}
+                              {%- elsif section.settings.po_category_source == 'product_type' -%}
+                                {%- if product.type == addon_match -%}
+                                  {%- assign product_matches_addon = true -%}
+                                {%- endif -%}
+                              {%- else -%}
+                                {%- if product.tags contains addon_match or product.type == addon_match -%}
+                                  {%- assign product_matches_addon = true -%}
+                                {%- endif -%}
+                              {%- endif -%}
+
+                              {%- if product_matches_addon -%}
+                                {%- assign product_token = '|' | append: product.id | append: '|' -%}
+                                {%- unless shown_product_ids contains product_token -%}
+                                  {%- assign shown_product_ids = shown_product_ids | append: product_token -%}
+                                {%- endunless -%}
+
+                                {%- render 'product-grid-item',
+                                  product: product,
+                                  per_row: per_row,
+                                  quick_shop_enable: settings.quick_shop_enable
+                                -%}
+                              {%- endif -%}
+                            {%- endfor -%}
+                          </div>
+                        {%- else -%}
+                          <p class="po-weekly-menu-empty">No products found in this add-on category yet.</p>
+                        {%- endif -%}
+                      </div>
+                    {%- endif -%}
+                  {%- endif -%}
+                {%- endfor -%}
+              </section>
+            {%- endif -%}
+          {%- endif -%}
+
+          {%- if section.settings.po_show_uncategorized -%}
+            {%- assign uncategorized_count = 0 -%}
+
+            {%- for product in collection.products -%}
+              {%- assign product_token = '|' | append: product.id | append: '|' -%}
+
+              {%- unless shown_product_ids contains product_token -%}
+                {%- assign uncategorized_count = uncategorized_count | plus: 1 -%}
+              {%- endunless -%}
+            {%- endfor -%}
+
+            {%- if uncategorized_count > 0 -%}
+              <section class="po-weekly-menu-category">
+                <div class="po-weekly-menu-category__head">
+                  <h2 class="po-weekly-menu-category__title">{{ section.settings.po_uncategorized_title }}</h2>
+                </div>
+
+                <div class="grid grid--uniform">
+                  {%- for product in collection.products -%}
+                    {%- assign product_token = '|' | append: product.id | append: '|' -%}
+
+                    {%- unless shown_product_ids contains product_token -%}
+                      {%- render 'product-grid-item',
+                        product: product,
+                        per_row: per_row,
+                        quick_shop_enable: settings.quick_shop_enable
+                      -%}
+                    {%- endunless -%}
+                  {%- endfor -%}
+                </div>
+              </section>
+            {%- endif -%}
+          {%- endif -%}
+
+          {%- if paginate.pages > 1 -%}
+            <div class="pagination">
+              {{ paginate | default_pagination }}
+            </div>
+          {%- endif -%}
+        {%- endpaginate -%}
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script type="application/ld+json">
+{
+  "@context": "http://schema.org",
+  "@type": "CollectionPage",
+  {% if collection.description != blank %}
+    "description": {{ collection.description | strip_html | json }},
+  {% endif %}
+  {% if page_image %}
+    {% assign image_size = page_image.width | append: 'x' %}
+    "image": {
+      "@type": "ImageObject",
+      "height": {{ page_image.height | json }},
+      "url": {{ page_image | img_url: image_size | prepend: "https:" | json }},
+      "width": {{ page_image.width | json }}
+    },
+  {% endif %}
+  "name": {{ collection.title | json }}
+}
+</script>
+
+{% schema %}
+{
+  "name": "Product grid",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Weekly menu organization"
+    },
+    {
+      "type": "checkbox",
+      "id": "po_show_direct_category_links",
+      "label": "Show direct category links",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "po_direct_category_heading",
+      "label": "Direct category heading",
+      "default": "Shop by category"
+    },
+    {
+      "type": "textarea",
+      "id": "po_main_categories",
+      "label": "Main categories",
+      "info": "One category per line. Format: Section title|Product tag or product type",
+      "default": "Proteins|Proteins\nSides|Sides\nSalads|Salads"
+    },
+    {
+      "type": "checkbox",
+      "id": "po_show_addons",
+      "label": "Show Add-Ons section",
+      "default": true
+    },
+    {
+      "type": "textarea",
+      "id": "po_addon_categories",
+      "label": "Add-On categories",
+      "info": "One add-on category per line. Format: Heading|Product tag or product type",
+      "default": "Breakfast|Breakfast\nBakery|Bakery\nFresh-Pressed Juices|Fresh-Pressed Juices\nFamily-Style Protein|Family-Style Protein Add-Ons"
+    },
+    {
+      "type": "select",
+      "id": "po_category_source",
+      "label": "Organize products by",
+      "default": "tag_or_type",
+      "options": [
+        {
+          "value": "tag",
+          "label": "Product tag"
+        },
+        {
+          "value": "product_type",
+          "label": "Product type"
+        },
+        {
+          "value": "tag_or_type",
+          "label": "Product tag or product type"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "po_show_empty_categories",
+      "label": "Show empty categories",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "po_show_uncategorized",
+      "label": "Show uncategorized products",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "po_uncategorized_title",
+      "label": "Uncategorized title",
+      "default": "More Items"
+    },
+    {
+      "type": "header",
+      "content": "Filtering and sorting"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_sidebar",
+      "label": "Enable filter",
+      "default": true,
+      "info": "This setting is kept for theme compatibility, but the left sidebar is removed on this weekly menu layout."
+    },
+    {
+      "type": "checkbox",
+      "id": "collapsed",
+      "label": "Collapse filters",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "filter_style",
+      "label": "Filter style",
+      "default": "sidebar",
+      "options": [
+        {
+          "value": "sidebar",
+          "label": "Sidebar"
+        },
+        {
+          "value": "drawer",
+          "label": "Drawer"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_color_swatches",
+      "label": "Enable color swatches",
+      "info": "[View setup instructions](https://archetypethemes.co/blogs/impulse/how-do-i-set-up-color-swatches)"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_sort",
+      "label": "Show sort options",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "collection_description",
+      "name": "Collection description",
+      "limit": 1
+    },
+    {
+      "type": "product_grid",
+      "name": "Products",
+      "settings": [
+        {
+          "type": "checkbox",
+          "id": "enable_collection_count",
+          "label": "Enable collection count",
+          "default": true
+        },
+        {
+          "type": "range",
+          "id": "per_row",
+          "label": "Products per row",
+          "default": 4,
+          "min": 2,
+          "max": 5,
+          "step": 1
+        },
+        {
+          "type": "range",
+          "id": "rows_per_page",
+          "label": "Rows per page",
+          "default": 7,
+          "min": 3,
+          "max": 20,
+          "step": 1
+        },
+        {
+          "type": "checkbox",
+          "id": "mobile_flush_grid",
+          "label": "Flush grid on mobile",
+          "default": false
+        }
+      ],
+      "limit": 1
+    },
+    {
+      "type": "po_direct_category",
+      "name": "Direct category link",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "po_direct_collection",
+          "label": "Select category / collection"
+        },
+        {
+          "type": "text",
+          "id": "po_direct_title",
+          "label": "Custom label",
+          "info": "Optional. Leave blank to use the selected collection title."
+        },
+        {
+          "type": "url",
+          "id": "po_direct_url",
+          "label": "Custom link",
+          "info": "Optional. Leave blank to use the selected collection link."
+        }
+      ]
+    },
+    {
+      "type": "subcollections",
+      "name": "Subcollections",
+      "settings": [
+        {
+          "type": "paragraph",
+          "content": "Links to collections from your menu will appear here. [Learn more](https://archetypethemes.co/blogs/expanse/how-do-i-create-subcollections)"
+        },
+        {
+          "type": "range",
+          "id": "subcollections_per_row",
+          "label": "Subcollections per row",
+          "default": 5,
+          "min": 2,
+          "max": 5,
+          "step": 1
+        }
+      ],
+      "limit": 1
+    }
+  ]
+}
+{% endschema %}

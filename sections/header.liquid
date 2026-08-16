@@ -1,0 +1,1898 @@
+{%- comment -%}
+  Premium Header section with Theme Editor logo image option.
+  Install in Shopify as: sections/header.liquid or replace your current header section code.
+{%- endcomment -%}
+
+{%- liquid
+  assign main_menu = linklists[section.settings.main_menu_link_list]
+  assign toolbar_menu = linklists[section.settings.toolbar_menu]
+
+  assign template_name = template | replace: '.', ' ' | truncatewords: 2, '' | handle
+
+  assign sticky_header = false
+  if section.settings.header_style == 'sticky'
+    assign sticky_header = true
+  endif
+
+  assign overlay_header = false
+  if template_name == 'index' and section.settings.sticky_index
+    assign overlay_header = true
+  endif
+  if template_name == 'collection' and collection.image and section.settings.sticky_collection
+    assign overlay_header = true
+  endif
+
+  assign popular_collection = section.settings.popular_collection
+-%}
+
+{%- render 'drawer-menu',
+  section: section,
+  main_menu: main_menu,
+  toolbar_menu: toolbar_menu,
+  logo_alignment: 'left'
+-%}
+
+{%- render 'cart-drawer' -%}
+
+<style>
+  .po-premium-header,
+  .po-premium-header *,
+  .po-above-header-blocks,
+  .po-above-header-blocks *,
+  .po-order-modal,
+  .po-order-modal * {
+    box-sizing: border-box;
+  }
+
+  .po-above-header-blocks {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    background: transparent;
+  }
+
+  .po-above-header-block {
+    width: 100%;
+  }
+
+  .po-above-header-liquid {
+    width: 100%;
+  }
+
+  .po-above-header-announcement {
+    width: 100%;
+    background: var(--po-above-bg);
+    color: var(--po-above-text);
+    border-bottom: 1px solid rgba(7, 61, 39, 0.08);
+  }
+
+  .po-above-header-announcement__inner {
+    max-width: {{ section.settings.page_width }}px;
+    margin: 0 auto;
+    padding: 9px {{ section.settings.desktop_side_padding }}px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+    text-align: center;
+    font-size: 13px;
+    line-height: 1.35;
+    font-weight: 650;
+  }
+
+  .po-above-header-announcement__text,
+  .po-above-header-announcement__center {
+    color: var(--po-above-text);
+  }
+
+  .po-above-header-announcement__link {
+    color: var(--po-above-accent);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    font-weight: 800;
+  }
+
+  .po-header-sticky-placeholder {
+    display: block;
+    width: 100%;
+    height: 0;
+  }
+
+  .header-sticky-wrapper {
+    position: relative;
+    z-index: 1000;
+    width: 100%;
+    background: var(--po-header-bg, {{ section.settings.header_bg }});
+  }
+
+  .header-sticky-wrapper.po-header-sticky-active {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    z-index: 1000 !important;
+    background: var(--po-header-bg, {{ section.settings.header_bg }});
+    transform: none !important;
+    will-change: auto !important;
+  }
+
+  .header-sticky-wrapper.po-header-sticky-active #HeaderWrapper,
+  .header-sticky-wrapper.po-header-sticky-active .po-premium-header {
+    position: relative !important;
+    z-index: 1000 !important;
+  }
+
+  .po-premium-header {
+    --po-header-bg: {{ section.settings.header_bg }};
+    --po-header-text: {{ section.settings.header_text }};
+    --po-header-green: {{ section.settings.header_green }};
+    --po-header-accent: {{ section.settings.header_accent }};
+    --po-header-border: {{ section.settings.header_border }};
+    --po-header-muted: rgba(7, 61, 39, 0.58);
+
+    position: relative;
+    z-index: 2;
+    background: var(--po-header-bg);
+    color: var(--po-header-text);
+    border-bottom: 1px solid var(--po-header-border);
+  }
+
+  .po-premium-header[data-sticky="true"] {
+    position: relative !important;
+    top: auto !important;
+  }
+
+  #CartDrawer,
+  .cart-drawer,
+  cart-drawer-component,
+  .drawer,
+  .drawer--right,
+  .drawer--left,
+  [data-cart-drawer],
+  [data-drawer="cart"],
+  .ajaxcart,
+  .ajaxcart-drawer {
+    z-index: 1000002 !important;
+  }
+
+  .drawer__overlay,
+  .cart-drawer__overlay,
+  .js-drawer-open .drawer__overlay,
+  body.js-drawer-open .drawer__overlay,
+  body.js-drawer-open-cart .drawer__overlay {
+    z-index: 1000001 !important;
+  }
+
+  .po-premium-header__wrap {
+    width: 100%;
+    max-width: {{ section.settings.page_width }}px;
+    margin: 0 auto;
+    padding: 0 {{ section.settings.desktop_side_padding }}px;
+  }
+
+  .po-premium-header__top {
+    min-height: {{ section.settings.desktop_header_height }}px;
+    display: grid;
+    grid-template-columns: minmax(230px, 0.85fr) minmax(340px, 1.25fr) minmax(310px, 0.9fr);
+    align-items: center;
+    gap: 26px;
+  }
+
+  .po-premium-header__logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 11px;
+    width: max-content;
+    max-width: 100%;
+    color: var(--po-header-green);
+    text-decoration: none;
+  }
+
+  .po-premium-header__logo-image {
+    display: block;
+    flex: 0 0 auto;
+    max-height: {{ section.settings.logo_image_height }}px;
+    width: auto;
+  }
+
+  .po-premium-header__logo-image img {
+    display: block;
+    max-height: {{ section.settings.logo_image_height }}px;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+  }
+
+  .po-premium-header__logo-mark {
+    width: 38px;
+    height: 38px;
+    border-radius: 999px;
+    background: var(--po-header-green);
+    color: var(--po-header-bg);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+  }
+
+  .po-premium-header__logo-mark svg {
+    width: 18px;
+    height: 18px;
+    stroke-width: 2;
+  }
+
+  .po-premium-header__logo-text {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    line-height: 1;
+    min-width: 0;
+  }
+
+  .po-premium-header__brand {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: {{ section.settings.logo_text_size }}px;
+    font-weight: 700;
+    letter-spacing: -0.035em;
+    color: var(--po-header-green);
+    white-space: nowrap;
+  }
+
+  .po-premium-header__since {
+    font-size: 10px;
+    font-weight: 650;
+    letter-spacing: 0.27em;
+    color: rgba(7, 61, 39, 0.62);
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  .po-premium-header__search {
+    width: 100%;
+  }
+
+  .po-premium-header__search-form {
+    width: 100%;
+    min-height: 46px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 17px;
+    border-radius: 999px;
+    border: 1px solid rgba(7, 61, 39, 0.13);
+    background: rgba(255, 255, 255, 0.68);
+    box-shadow: 0 12px 34px rgba(7, 61, 39, 0.055);
+    transition:
+      border-color 0.22s ease,
+      background 0.22s ease,
+      box-shadow 0.22s ease;
+  }
+
+  .po-premium-header__search-form:focus-within {
+    background: #fff !important;
+    border-color: rgba(7, 61, 39, 0.26) !important;
+    box-shadow: 0 14px 34px rgba(7, 61, 39, 0.08) !important;
+  }
+
+  .po-premium-header__search-submit {
+    width: 22px;
+    height: 22px;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: var(--po-header-green);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    cursor: pointer;
+  }
+
+  .po-premium-header__search-submit svg {
+    width: 19px;
+    height: 19px;
+    stroke-width: 2;
+  }
+
+  .po-premium-header__search-input {
+    width: 100%;
+    min-width: 0;
+    border: 0 !important;
+    outline: none !important;
+    box-shadow: none !important;
+    background: transparent;
+    color: var(--po-header-text);
+    font-size: 14.5px;
+    font-weight: 550;
+    line-height: 1;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .po-premium-header__search-input:focus,
+  .po-premium-header__search-input:focus-visible,
+  .po-premium-header__search-form input,
+  .po-premium-header__search-form input:focus,
+  .po-premium-header__search-form input:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
+    border: 0 !important;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .po-premium-header__search-input::placeholder {
+    color: var(--po-header-muted);
+    opacity: 1;
+  }
+
+  .po-premium-header__actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+
+  .po-premium-header__icon,
+  .po-premium-header__mobile-search-btn,
+  .po-premium-header__mobile-menu-btn {
+    position: relative;
+    width: 42px;
+    height: 42px;
+    padding: 0;
+    border: 1px solid rgba(7, 61, 39, 0.14);
+    background: rgba(255, 255, 255, 0.52);
+    color: var(--po-header-green);
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+      background 0.22s ease,
+      border-color 0.22s ease,
+      color 0.22s ease,
+      transform 0.22s ease,
+      box-shadow 0.22s ease;
+  }
+
+  .po-premium-header__mobile-search-btn,
+  .po-premium-header__mobile-menu-btn {
+    display: none;
+  }
+
+  .po-premium-header__icon svg,
+  .po-premium-header__mobile-search-btn svg,
+  .po-premium-header__mobile-menu-btn svg {
+    width: 21px;
+    height: 21px;
+    stroke: currentColor;
+    stroke-width: 2;
+    display: block;
+  }
+
+  .po-premium-header__icon:hover,
+  .po-premium-header__mobile-search-btn:hover,
+  .po-premium-header__mobile-menu-btn:hover {
+    transform: translateY(-1px);
+    background: #fff;
+    border-color: rgba(7, 61, 39, 0.24);
+    box-shadow: 0 10px 24px rgba(7, 61, 39, 0.08);
+  }
+
+  .po-premium-header__cart {
+    background: var(--po-header-green);
+    border-color: var(--po-header-green);
+    color: #fff;
+  }
+
+  .po-premium-header__cart:hover {
+    background: #052f1f;
+    border-color: #052f1f;
+    color: #fff;
+  }
+
+  .po-premium-header__cart svg {
+    width: 23px;
+    height: 23px;
+    stroke: none !important;
+    fill: currentColor !important;
+  }
+
+  .po-premium-header__cart-count {
+    position: absolute;
+    top: -5px;
+    right: -4px;
+    min-width: 17px;
+    height: 17px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: var(--po-header-accent);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 850;
+    line-height: 17px;
+    text-align: center;
+  }
+
+  .po-premium-header__order-btn {
+    min-height: 42px;
+    padding: 0 20px;
+    border-radius: 999px;
+    border: 1px solid var(--po-header-green);
+    background: var(--po-header-green);
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 13.5px;
+    font-weight: 760;
+    letter-spacing: -0.01em;
+    line-height: 1;
+    cursor: pointer;
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+      transform 0.22s ease,
+      background 0.22s ease,
+      border-color 0.22s ease,
+      color 0.22s ease,
+      box-shadow 0.22s ease;
+  }
+
+  .po-premium-header__order-btn svg {
+    width: 16px;
+    height: 16px;
+    stroke-width: 2.1;
+    flex: 0 0 auto;
+  }
+
+  .po-premium-header__order-btn:hover {
+    transform: translateY(-1px);
+    background: transparent;
+    color: var(--po-header-green);
+    box-shadow: 0 12px 28px rgba(7, 61, 39, 0.12);
+  }
+
+  .po-premium-header__mobile-search-panel {
+    display: none;
+  }
+
+  .po-premium-header__mobile-search-panel.is-active {
+    display: block;
+  }
+
+  .po-premium-header__menu-layer {
+    border-top: 1px solid rgba(7, 61, 39, 0.08);
+  }
+
+  .po-premium-header__nav {
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: {{ section.settings.menu_gap }}px;
+  }
+
+  .po-premium-header__nav a {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    min-height: 34px;
+    color: var(--po-header-text);
+    text-decoration: none;
+    font-size: {{ section.settings.menu_font_size }}px;
+    font-weight: 650;
+    letter-spacing: -0.01em;
+    line-height: 1;
+    white-space: nowrap;
+    transition: color 0.22s ease;
+  }
+
+  .po-premium-header__nav a::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 4px;
+    height: 1px;
+    background: var(--po-header-green);
+    transform: scaleX(0);
+    transform-origin: center;
+    transition: transform 0.22s ease;
+  }
+
+  .po-premium-header__nav a:hover {
+    color: var(--po-header-green);
+  }
+
+  .po-premium-header__nav a:hover::after {
+    transform: scaleX(1);
+  }
+
+  .po-order-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000004;
+    display: none;
+    background: rgba(6, 31, 22, 0.58);
+    backdrop-filter: blur(9px);
+    -webkit-backdrop-filter: blur(9px);
+  }
+
+  .po-order-modal.is-active {
+    display: block;
+  }
+
+  .po-order-modal__page {
+    width: min(1040px, calc(100% - 28px));
+    height: min(88vh, 820px);
+    margin: 6vh auto;
+    border-radius: 30px;
+    background:
+      radial-gradient(circle at 12% 0%, rgba(241, 200, 88, 0.16), transparent 28%),
+      linear-gradient(180deg, #F7F1E4 0%, #F1E8D7 100%);
+    border: 1px solid rgba(7, 61, 39, 0.13);
+    box-shadow: 0 34px 100px rgba(0, 0, 0, 0.28);
+    color: var(--po-header-green);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  .po-order-modal__head {
+    padding: 24px 28px 20px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+    border-bottom: 1px solid rgba(7, 61, 39, 0.1);
+    flex: 0 0 auto;
+  }
+
+  .po-order-modal__eyebrow {
+    margin: 0 0 8px;
+    color: #C96E3C;
+    font-size: 11px;
+    font-weight: 850;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .po-order-modal__title {
+    margin: 0;
+    color: var(--po-header-green);
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: clamp(28px, 3vw, 42px);
+    line-height: 1.05;
+    letter-spacing: -0.045em;
+  }
+
+  .po-order-modal__text {
+    max-width: 620px;
+    margin: 9px 0 0;
+    color: rgba(7, 61, 39, 0.66);
+    font-size: 14.5px;
+    line-height: 1.55;
+    font-weight: 500;
+  }
+
+  .po-order-modal__close {
+    width: 42px;
+    height: 42px;
+    border-radius: 999px;
+    border: 1px solid rgba(7, 61, 39, 0.14);
+    background: rgba(255, 255, 255, 0.55);
+    color: var(--po-header-green);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex: 0 0 auto;
+  }
+
+  .po-order-modal__close svg {
+    width: 19px;
+    height: 19px;
+    stroke-width: 2;
+  }
+
+  .po-order-modal__scroll {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding: 24px 28px 30px;
+  }
+
+  .po-order-modal__scroll::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  .po-order-modal__scroll::-webkit-scrollbar-track {
+    background: rgba(7, 61, 39, 0.06);
+    border-radius: 999px;
+  }
+
+  .po-order-modal__scroll::-webkit-scrollbar-thumb {
+    background: rgba(7, 61, 39, 0.28);
+    border-radius: 999px;
+  }
+
+  .po-order-products {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .po-order-product {
+    overflow: hidden;
+    border-radius: 22px;
+    background: rgba(255, 255, 255, 0.56);
+    border: 1px solid rgba(7, 61, 39, 0.1);
+    box-shadow: 0 16px 42px rgba(7, 61, 39, 0.08);
+  }
+
+  .po-order-product__image {
+    display: block;
+    aspect-ratio: 1 / 0.78;
+    background: rgba(238, 225, 201, 0.62);
+    overflow: hidden;
+  }
+
+  .po-order-product__image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .po-order-product__content {
+    padding: 15px 14px 14px;
+  }
+
+  .po-order-product__title {
+    margin: 0;
+    color: var(--po-header-green);
+    font-size: 15px;
+    line-height: 1.28;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .po-order-product__price {
+    margin: 8px 0 13px;
+    color: rgba(7, 61, 39, 0.68);
+    font-size: 13.5px;
+    font-weight: 750;
+  }
+
+  .po-order-product__form {
+    margin: 0;
+  }
+
+  .po-order-product__btn {
+    width: 100%;
+    min-height: 40px;
+    border-radius: 999px;
+    border: 1px solid var(--po-header-green);
+    background: var(--po-header-green);
+    color: #fff;
+    font-size: 13px;
+    font-weight: 800;
+    cursor: pointer;
+    transition:
+      background 0.22s ease,
+      color 0.22s ease,
+      transform 0.22s ease;
+  }
+
+  .po-order-product__btn:hover {
+    background: transparent;
+    color: var(--po-header-green);
+    transform: translateY(-1px);
+  }
+
+  .po-order-product__btn[disabled] {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+
+  .po-order-empty {
+    padding: 26px;
+    border-radius: 20px;
+    background: rgba(255,255,255,0.5);
+    color: rgba(7,61,39,0.7);
+    font-weight: 650;
+  }
+
+  body.po-order-modal-open {
+    overflow: hidden;
+  }
+
+  #NavDrawer .mobile-nav__link,
+  #NavDrawer .mobile-nav__link--top-level,
+  .drawer .mobile-nav__link,
+  .drawer .mobile-nav__link--top-level,
+  .mobile-nav__link,
+  .mobile-nav__link--top-level {
+    font-size: 15px !important;
+    line-height: 1.35 !important;
+    font-weight: 600 !important;
+    letter-spacing: 0 !important;
+    text-transform: none !important;
+    padding-top: 13px !important;
+    padding-bottom: 13px !important;
+  }
+
+  #NavDrawer .mobile-nav__sublist .mobile-nav__link,
+  .drawer .mobile-nav__sublist .mobile-nav__link {
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    opacity: 0.86;
+  }
+
+  #NavDrawer .drawer__title,
+  .drawer .drawer__title {
+    font-size: 17px !important;
+    font-weight: 700 !important;
+  }
+
+  /* Hide text logo when image logo is used */
+  .po-premium-header__logo.has-image .po-premium-header__logo-text {
+    display: none;
+  }
+
+  .po-premium-header__logo.has-image .po-premium-header__logo-mark {
+    display: none;
+  }
+
+  @media (max-width: 1180px) {
+    .po-premium-header__top {
+      grid-template-columns: minmax(210px, 0.8fr) minmax(290px, 1.1fr) minmax(285px, 0.95fr);
+      gap: 18px;
+    }
+
+    .po-premium-header__nav {
+      gap: 28px;
+    }
+
+    .po-premium-header__order-btn {
+      padding: 0 16px;
+    }
+
+    .po-order-products {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .po-premium-header__logo-image {
+      max-height: {{ section.settings.mobile_logo_image_height }}px;
+    }
+
+    .po-premium-header__logo-image img {
+      max-height: {{ section.settings.mobile_logo_image_height }}px;
+    }
+  }
+
+  @media (max-width: 990px) {
+    .po-above-header-announcement__inner {
+      padding: 8px 14px;
+      gap: 7px;
+      flex-direction: column;
+      font-size: 12px;
+    }
+
+    .po-premium-header__wrap {
+      padding: 0 14px;
+    }
+
+    .po-premium-header__top {
+      min-height: 68px;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+    }
+
+    .po-premium-header__search,
+    .po-premium-header__account,
+    .po-premium-header__menu-layer {
+      display: none !important;
+    }
+
+    .po-premium-header__logo {
+      min-width: 0;
+      gap: 9px;
+    }
+
+    .po-premium-header__logo-mark {
+      width: 34px;
+      height: 34px;
+    }
+
+    .po-premium-header__logo-mark svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .po-premium-header__brand {
+      font-size: {{ section.settings.mobile_logo_text_size }}px;
+    }
+
+    .po-premium-header__since {
+      font-size: 8.5px;
+      letter-spacing: 0.22em;
+    }
+
+    .po-premium-header__actions {
+      gap: 6px;
+    }
+
+    .po-premium-header__mobile-search-btn,
+    .po-premium-header__mobile-menu-btn {
+      display: inline-flex;
+    }
+
+    .po-premium-header__order-btn {
+      min-height: 37px;
+      padding: 0 13px;
+      font-size: 12.5px;
+      gap: 6px;
+    }
+
+    .po-premium-header__order-btn svg {
+      display: none;
+    }
+
+    .po-premium-header__mobile-search-btn,
+    .po-premium-header__mobile-menu-btn,
+    .po-premium-header__cart {
+      width: 36px !important;
+      height: 36px !important;
+      background: transparent !important;
+      border: 0 !important;
+      box-shadow: none !important;
+      color: #1f2d25 !important;
+      border-radius: 0 !important;
+    }
+
+    .po-premium-header__mobile-search-btn svg,
+    .po-premium-header__mobile-menu-btn svg {
+      width: 22px !important;
+      height: 22px !important;
+      stroke-width: 1.7 !important;
+    }
+
+    .po-premium-header__cart svg {
+      width: 24px !important;
+      height: 24px !important;
+      stroke: none !important;
+      fill: currentColor !important;
+    }
+
+    .po-premium-header__cart:hover,
+    .po-premium-header__mobile-search-btn:hover,
+    .po-premium-header__mobile-menu-btn:hover {
+      transform: none !important;
+      background: transparent !important;
+      box-shadow: none !important;
+    }
+
+    .po-premium-header__cart-count {
+      top: -2px;
+      right: -1px;
+      min-width: 15px;
+      height: 15px;
+      font-size: 9px;
+      line-height: 15px;
+    }
+
+    .po-premium-header__mobile-search-panel {
+      padding: 0 0 12px;
+    }
+
+    .po-premium-header__mobile-search-panel .po-premium-header__search-form {
+      min-height: 42px;
+      border-radius: 16px;
+      padding: 0 14px;
+      background: rgba(255, 255, 255, 0.78);
+    }
+
+    .po-order-modal__page {
+      width: 100%;
+      height: 90vh;
+      margin: 10vh 0 0;
+      border-radius: 26px 26px 0 0;
+    }
+
+    .po-order-modal__head {
+      padding: 20px 18px 16px;
+    }
+
+    .po-order-modal__scroll {
+      padding: 18px 18px 24px;
+    }
+
+    .po-order-products {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .po-order-product {
+      border-radius: 18px;
+    }
+
+    .po-order-product__content {
+      padding: 12px;
+    }
+
+    .po-order-product__title {
+      font-size: 13.5px;
+    }
+
+    .po-order-product__price {
+      font-size: 12.5px;
+    }
+
+    .po-order-product__btn {
+      min-height: 36px;
+      font-size: 12px;
+    }
+
+    .po-premium-header__logo.has-image .po-premium-header__logo-mark {
+      display: none !important;
+    }
+
+    .po-premium-header__logo.has-image .po-premium-header__logo-text {
+      display: none !important;
+    }
+
+    .po-premium-header__logo-image {
+      max-height: {{ section.settings.mobile_logo_image_height }}px;
+    }
+
+    .po-premium-header__logo-image img {
+      max-height: {{ section.settings.mobile_logo_image_height }}px;
+    }
+  }
+
+  @media (max-width: 520px) {
+    .po-premium-header__wrap {
+      padding: 0 12px;
+    }
+
+    .po-premium-header__top {
+      gap: 8px;
+    }
+
+    .po-premium-header__brand {
+      font-size: 18px;
+      max-width: 136px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .po-premium-header__order-btn {
+      padding: 0 10px;
+      font-size: 11.8px;
+    }
+
+    .po-premium-header__actions {
+      gap: 5px;
+    }
+  }
+
+  @media (max-width: 390px) {
+    .po-premium-header__brand {
+      font-size: 16px;
+      max-width: 112px;
+    }
+
+    .po-premium-header__since {
+      font-size: 7.5px;
+    }
+
+    .po-premium-header__order-btn {
+      min-height: 33px;
+      padding: 0 8px;
+      font-size: 10.8px;
+    }
+
+    .po-order-products {
+      gap: 10px;
+    }
+
+    .po-order-modal__title {
+      font-size: 25px;
+    }
+  }
+
+  @media (max-width: 350px) {
+    .po-premium-header__since {
+      display: none;
+    }
+
+    .po-premium-header__brand {
+      max-width: 102px;
+    }
+
+    .po-premium-header__order-btn {
+      padding: 0 7px;
+      font-size: 10px;
+    }
+  }
+</style>
+
+<div data-section-id="{{ section.id }}" data-section-type="header">
+
+  {%- assign has_above_header_blocks = false -%}
+  {%- for block in section.blocks -%}
+    {%- if block.type == 'above_header_liquid' or block.type == 'above_header_announcement' -%}
+      {%- assign has_above_header_blocks = true -%}
+    {%- endif -%}
+  {%- endfor -%}
+
+  {%- if has_above_header_blocks -%}
+    <div class="po-above-header-blocks" data-po-above-header-blocks>
+      {%- for block in section.blocks -%}
+        {%- case block.type -%}
+
+          {%- when 'above_header_liquid' -%}
+            <div class="po-above-header-block po-above-header-liquid" {{ block.shopify_attributes }}>
+              {{ block.settings.custom_liquid }}
+            </div>
+
+          {%- when 'above_header_announcement' -%}
+            <div
+              class="po-above-header-block po-above-header-announcement"
+              style="
+                --po-above-bg: {{ block.settings.bg_color }};
+                --po-above-text: {{ block.settings.text_color }};
+                --po-above-accent: {{ block.settings.accent_color }};
+              "
+              {{ block.shopify_attributes }}>
+              <div class="po-above-header-announcement__inner">
+                {%- if block.settings.left_text != blank -%}
+                  <span class="po-above-header-announcement__text">
+                    {{ block.settings.left_text }}
+                  </span>
+                {%- endif -%}
+
+                {%- if block.settings.center_text != blank -%}
+                  <span class="po-above-header-announcement__center">
+                    {{ block.settings.center_text }}
+                  </span>
+                {%- endif -%}
+
+                {%- if block.settings.link_text != blank and block.settings.link != blank -%}
+                  <a href="{{ block.settings.link }}" class="po-above-header-announcement__link">
+                    {{ block.settings.link_text }}
+                  </a>
+                {%- endif -%}
+              </div>
+            </div>
+
+        {%- endcase -%}
+      {%- endfor -%}
+    </div>
+  {%- endif -%}
+
+  {%- unless overlay_header -%}
+    {%- if section.settings.show_locale_selector or section.settings.show_currency_selector or section.settings.toolbar_social or section.settings.toolbar_menu != blank -%}
+      {%- render 'toolbar',
+        section: section,
+        toolbar_menu: toolbar_menu,
+        overlay_header: overlay_header
+      -%}
+    {%- endif -%}
+  {%- endunless -%}
+
+  <div class="po-header-sticky-placeholder" data-po-sticky-placeholder></div>
+
+  <div
+    class="header-sticky-wrapper{% if sticky_header %} po-header-sticky-enabled{% endif %}"
+    data-po-sticky-wrapper
+    data-po-sticky-enabled="{{ sticky_header }}">
+    <div id="HeaderWrapper" class="header-wrapper{% if overlay_header %} header-wrapper--sticky is-light{% endif %}">
+      <header
+        id="SiteHeader"
+        class="po-premium-header"
+        data-sticky="{{ sticky_header }}"
+        data-overlay="{{ overlay_header }}">
+
+        <div class="po-premium-header__wrap">
+          <div class="po-premium-header__top">
+
+            <a href="{{ routes.root_url }}" class="po-premium-header__logo{% if section.settings.logo_image != blank %} has-image{% endif %}" aria-label="{{ shop.name }}">
+              {%- if section.settings.logo_image != blank -%}
+                <span class="po-premium-header__logo-image">
+                  {{
+                    section.settings.logo_image
+                    | image_url: width: 400
+                    | image_tag:
+                      loading: 'lazy',
+                      alt: section.settings.logo_image.alt | default: shop.name,
+                      widths: '200, 400'
+                  }}
+                </span>
+              {%- else -%}
+                <span class="po-premium-header__logo-mark">
+                  <svg aria-hidden="true" focusable="false" role="presentation" fill="none" viewBox="0 0 24 24">
+                    <path d="M6.5 17.5c5.8-.2 10.2-4.6 11-11-6.4.7-10.9 5.1-11 11Z" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M8 16c2.2-2.8 4.7-5.1 8-6.9" stroke="currentColor" stroke-linecap="round"/>
+                  </svg>
+                </span>
+
+                <span class="po-premium-header__logo-text">
+                  <span class="po-premium-header__brand">
+                    {{ section.settings.logo_text | escape }}
+                  </span>
+                  <span class="po-premium-header__since">
+                    {{ section.settings.logo_subtext | escape }}
+                  </span>
+                </span>
+              {%- endif -%}
+            </a>
+
+            <div class="po-premium-header__search">
+              <form action="{{ routes.search_url }}" method="get" role="search" class="po-premium-header__search-form">
+                <input type="hidden" name="type" value="{{ settings.search_type }}">
+                <input type="hidden" name="options[prefix]" value="last">
+
+                <button type="submit" class="po-premium-header__search-submit" aria-label="{{ 'general.search.submit' | t }}">
+                  <svg aria-hidden="true" focusable="false" role="presentation" fill="none" viewBox="0 0 24 24">
+                    <circle cx="11" cy="11" r="6.5" stroke="currentColor"/>
+                    <path d="M16 16l4 4" stroke="currentColor" stroke-linecap="round"/>
+                  </svg>
+                </button>
+
+                <input
+                  type="search"
+                  name="q"
+                  value="{{ search.terms | escape | replace: '*', '' }}"
+                  placeholder="{{ section.settings.search_placeholder }}"
+                  class="po-premium-header__search-input"
+                  data-po-typing-search
+                  data-placeholder-list="{{ section.settings.search_placeholder_animation | escape }}"
+                  aria-label="{{ 'general.search.placeholder' | t }}">
+              </form>
+            </div>
+
+            <div class="po-premium-header__actions">
+              {%- if shop.customer_accounts_enabled -%}
+                <a
+                  href="{{ routes.account_url }}"
+                  class="po-premium-header__icon po-premium-header__account"
+                  aria-label="{{ 'customer.account.title' | t }}">
+                  <svg aria-hidden="true" focusable="false" role="presentation" fill="none" viewBox="0 0 24 24">
+                    <path d="M12 12.5a4 4 0 1 0 0-8 4 4 0 0 0 0 8Z" stroke="currentColor"/>
+                    <path d="M4.8 20c1.1-3.7 3.7-5.6 7.2-5.6s6.1 1.9 7.2 5.6" stroke="currentColor" stroke-linecap="round"/>
+                  </svg>
+                </a>
+              {%- endif -%}
+
+              {%- if section.settings.order_button_link != blank -%}
+                <a
+                  href="{{ section.settings.order_button_link }}"
+                  class="po-premium-header__order-btn"
+                  aria-label="{{ section.settings.order_button_text | escape }}"
+                >
+                  <span>{{ section.settings.order_button_text }}</span>
+                  <svg aria-hidden="true" focusable="false" role="presentation" fill="none" viewBox="0 0 24 24">
+                    <path d="M5 12h14" stroke="currentColor" stroke-linecap="round"/>
+                    <path d="M13 6l6 6-6 6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </a>
+              {%- else -%}
+                <button type="button" class="po-premium-header__order-btn" data-po-order-open>
+                  <span>{{ section.settings.order_button_text }}</span>
+                  <svg aria-hidden="true" focusable="false" role="presentation" fill="none" viewBox="0 0 24 24">
+                    <path d="M5 12h14" stroke="currentColor" stroke-linecap="round"/>
+                    <path d="M13 6l6 6-6 6" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+              {%- endif -%}
+
+              <button
+                type="button"
+                class="po-premium-header__mobile-search-btn"
+                data-po-mobile-search-toggle
+                aria-label="{{ 'general.search.title' | t }}">
+                <svg aria-hidden="true" focusable="false" role="presentation" fill="none" viewBox="0 0 24 24">
+                  <circle cx="11" cy="11" r="6.5" stroke="currentColor"/>
+                  <path d="M16 16l4 4" stroke="currentColor" stroke-linecap="round"/>
+                </svg>
+              </button>
+
+              <a
+                href="{{ routes.cart_url }}"
+                class="po-premium-header__icon po-premium-header__cart js-drawer-open-cart"
+                aria-label="{{ 'cart.general.title' | t }}">
+                <svg aria-hidden="true" focusable="false" role="presentation" viewBox="0 0 512 512" fill="currentColor">
+                  <path d="M80 80c0-17.7 14.3-32 32-32h54.2c14.3 0 26.9 9.5 30.8 23.3L208.8 112H448c20.7 0 35.8 19.6 30.5 39.6l-47.4 176C427.4 341.5 414.8 351 400.5 351H209.7c-14.3 0-26.9-9.5-30.8-23.3L129.8 144H112c-17.7 0-32-14.3-32-32V80Zm138.5 224H377l34.5-128H184.3l34.2 128ZM224 440a40 40 0 1 1-80 0 40 40 0 0 1 80 0Zm192 0a40 40 0 1 1-80 0 40 40 0 0 1 80 0Z"/>
+                </svg>
+
+                <span class="po-premium-header__cart-count cart-link__bubble{% if cart.item_count == 0 %} hide{% endif %}">
+                  {{ cart.item_count }}
+                </span>
+              </a>
+
+              <button
+                type="button"
+                class="po-premium-header__mobile-menu-btn js-drawer-open-nav"
+                aria-controls="NavDrawer"
+                aria-label="{{ 'general.drawers.navigation' | t }}">
+                <svg aria-hidden="true" focusable="false" role="presentation" fill="none" viewBox="0 0 24 24">
+                  <path d="M5 7h14M5 12h14M5 17h14" stroke="currentColor" stroke-linecap="round"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="po-premium-header__mobile-search-panel" data-po-mobile-search-panel>
+            <form action="{{ routes.search_url }}" method="get" role="search" class="po-premium-header__search-form">
+              <input type="hidden" name="type" value="{{ settings.search_type }}">
+              <input type="hidden" name="options[prefix]" value="last">
+
+              <button type="submit" class="po-premium-header__search-submit" aria-label="{{ 'general.search.submit' | t }}">
+                <svg aria-hidden="true" focusable="false" role="presentation" fill="none" viewBox="0 0 24 24">
+                  <circle cx="11" cy="11" r="6.5" stroke="currentColor"/>
+                  <path d="M16 16l4 4" stroke="currentColor" stroke-linecap="round"/>
+                </svg>
+              </button>
+
+              <input
+                type="search"
+                name="q"
+                placeholder="{{ section.settings.search_placeholder }}"
+                class="po-premium-header__search-input"
+                aria-label="{{ 'general.search.placeholder' | t }}">
+            </form>
+          </div>
+
+          <div class="po-premium-header__menu-layer">
+            <nav class="po-premium-header__nav" role="navigation" aria-label="Main navigation">
+              {%- for link in main_menu.links -%}
+                <a href="{{ link.url }}">{{ link.title }}</a>
+              {%- endfor -%}
+            </nav>
+          </div>
+        </div>
+      </header>
+    </div>
+  </div>
+</div>
+
+<div class="po-order-modal" data-po-order-modal aria-hidden="true">
+  <div class="po-order-modal__page" role="dialog" aria-modal="true" aria-label="Popular products">
+    <div class="po-order-modal__head">
+      <div>
+        <p class="po-order-modal__eyebrow">{{ section.settings.popup_eyebrow }}</p>
+        <h2 class="po-order-modal__title">{{ section.settings.popup_title }}</h2>
+        <p class="po-order-modal__text">{{ section.settings.popup_text }}</p>
+      </div>
+
+      <button type="button" class="po-order-modal__close" data-po-order-close aria-label="Close popup">
+        <svg aria-hidden="true" focusable="false" role="presentation" fill="none" viewBox="0 0 24 24">
+          <path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="po-order-modal__scroll">
+      {%- if popular_collection != blank and popular_collection.products_count > 0 -%}
+        <div class="po-order-products">
+          {%- for product in popular_collection.products limit: section.settings.popup_product_limit -%}
+            {%- assign variant = product.selected_or_first_available_variant -%}
+
+            <div class="po-order-product">
+              <a href="{{ product.url }}" class="po-order-product__image">
+                {%- if product.featured_image != blank -%}
+                  {{ product.featured_image | image_url: width: 620 | image_tag: loading: 'lazy', alt: product.title }}
+                {%- endif -%}
+              </a>
+
+              <div class="po-order-product__content">
+                <h3 class="po-order-product__title">{{ product.title }}</h3>
+
+                <div class="po-order-product__price">
+                  {{ product.price | money }}
+                </div>
+
+                {%- if variant.available -%}
+                  <form method="post" action="{{ routes.cart_add_url }}" class="po-order-product__form">
+                    <input type="hidden" name="id" value="{{ variant.id }}">
+                    <input type="hidden" name="quantity" value="1">
+                    <input type="hidden" name="return_to" value="/checkout">
+                    <button type="submit" class="po-order-product__btn">
+                      Order This
+                    </button>
+                  </form>
+                {%- else -%}
+                  <button type="button" class="po-order-product__btn" disabled>
+                    Sold Out
+                  </button>
+                {%- endif -%}
+              </div>
+            </div>
+          {%- endfor -%}
+        </div>
+      {%- else -%}
+        <div class="po-order-empty">
+          Please select a collection from Header settings to show popular products.
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    var section = document.querySelector('[data-section-id="{{ section.id }}"]');
+
+    var stickyWrapper = section ? section.querySelector('[data-po-sticky-wrapper]') : null;
+    var stickyPlaceholder = section ? section.querySelector('[data-po-sticky-placeholder]') : null;
+    var stickyEnabled = stickyWrapper && stickyWrapper.getAttribute('data-po-sticky-enabled') === 'true';
+    var stickyStart = 0;
+    var ticking = false;
+
+    function unlockStickyForMeasure() {
+      if (!stickyWrapper) return false;
+
+      var wasFixed = stickyWrapper.classList.contains('po-header-sticky-active');
+
+      if (wasFixed) {
+        stickyWrapper.classList.remove('po-header-sticky-active');
+
+        if (stickyPlaceholder) {
+          stickyPlaceholder.style.height = '0px';
+        }
+      }
+
+      return wasFixed;
+    }
+
+    function refreshStickyMetrics() {
+      if (!stickyEnabled || !stickyWrapper) return;
+
+      var wasFixed = unlockStickyForMeasure();
+
+      stickyStart = stickyWrapper.getBoundingClientRect().top + window.pageYOffset;
+
+      if (wasFixed) {
+        updateStickyState();
+      }
+    }
+
+    function updateStickyState() {
+      if (!stickyEnabled || !stickyWrapper) return;
+
+      var height = stickyWrapper.offsetHeight || 0;
+      var shouldFix = window.pageYOffset >= stickyStart;
+
+      if (shouldFix) {
+        stickyWrapper.classList.add('po-header-sticky-active');
+
+        if (stickyPlaceholder) {
+          stickyPlaceholder.style.height = height + 'px';
+        }
+      } else {
+        stickyWrapper.classList.remove('po-header-sticky-active');
+
+        if (stickyPlaceholder) {
+          stickyPlaceholder.style.height = '0px';
+        }
+      }
+    }
+
+    function requestStickyUpdate() {
+      if (ticking) return;
+
+      ticking = true;
+
+      window.requestAnimationFrame(function () {
+        updateStickyState();
+        ticking = false;
+      });
+    }
+
+    if (stickyEnabled) {
+      setTimeout(function () {
+        refreshStickyMetrics();
+        updateStickyState();
+      }, 100);
+
+      window.addEventListener('scroll', requestStickyUpdate, { passive: true });
+
+      window.addEventListener('resize', function () {
+        refreshStickyMetrics();
+        updateStickyState();
+      });
+
+      window.addEventListener('load', function () {
+        refreshStickyMetrics();
+        updateStickyState();
+      });
+    }
+
+    var input = section ? section.querySelector('[data-po-typing-search]') : null;
+
+    if (input) {
+      var raw = input.getAttribute('data-placeholder-list') || '';
+      var words = raw.split('|').map(function (item) {
+        return item.trim();
+      }).filter(Boolean);
+
+      if (words.length) {
+        var wordIndex = 0;
+        var charIndex = 0;
+        var deleting = false;
+
+        function typePlaceholder() {
+          var word = words[wordIndex] || '';
+          var current = '';
+
+          if (!deleting) {
+            charIndex++;
+            current = word.substring(0, charIndex);
+          } else {
+            charIndex--;
+            current = word.substring(0, charIndex);
+          }
+
+          input.setAttribute('placeholder', current);
+
+          var speed = deleting ? 35 : 65;
+
+          if (!deleting && charIndex === word.length) {
+            speed = 1300;
+            deleting = true;
+          }
+
+          if (deleting && charIndex === 0) {
+            deleting = false;
+            wordIndex = (wordIndex + 1) % words.length;
+            speed = 300;
+          }
+
+          setTimeout(typePlaceholder, speed);
+        }
+
+        typePlaceholder();
+      }
+    }
+
+    var mobileSearchToggle = section ? section.querySelector('[data-po-mobile-search-toggle]') : null;
+    var mobileSearchPanel = section ? section.querySelector('[data-po-mobile-search-panel]') : null;
+    var mobileSearchInput = mobileSearchPanel ? mobileSearchPanel.querySelector('.po-premium-header__search-input') : null;
+
+    if (mobileSearchToggle && mobileSearchPanel) {
+      mobileSearchToggle.addEventListener('click', function () {
+        mobileSearchPanel.classList.toggle('is-active');
+
+        setTimeout(function () {
+          refreshStickyMetrics();
+          updateStickyState();
+        }, 100);
+
+        if (mobileSearchPanel.classList.contains('is-active') && mobileSearchInput) {
+          setTimeout(function () {
+            mobileSearchInput.focus();
+          }, 100);
+        }
+      });
+    }
+
+    var modal = document.querySelector('[data-po-order-modal]');
+    var openButtons = document.querySelectorAll('[data-po-order-open]');
+    var closeButtons = document.querySelectorAll('[data-po-order-close]');
+    var cartButtons = document.querySelectorAll('.js-drawer-open-cart');
+
+    function openModal() {
+      if (!modal) return;
+      modal.classList.add('is-active');
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('po-order-modal-open');
+    }
+
+    function closeModal() {
+      if (!modal) return;
+      modal.classList.remove('is-active');
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('po-order-modal-open');
+    }
+
+    openButtons.forEach(function (button) {
+      button.addEventListener('click', openModal);
+    });
+
+    closeButtons.forEach(function (button) {
+      button.addEventListener('click', closeModal);
+    });
+
+    cartButtons.forEach(function (button) {
+      button.addEventListener('click', function () {
+        closeModal();
+      });
+    });
+
+    if (modal) {
+      modal.addEventListener('click', function (event) {
+        if (event.target === modal) {
+          closeModal();
+        }
+      });
+    }
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'Escape') {
+        closeModal();
+      }
+    });
+  });
+</script>
+
+{% schema %}
+{
+  "name": "Header",
+  "settings": [
+    {
+      "type": "link_list",
+      "id": "main_menu_link_list",
+      "label": "Navigation",
+      "default": "main-menu"
+    },
+    {
+      "type": "select",
+      "id": "header_style",
+      "label": "Header style",
+      "default": "sticky",
+      "options": [
+        {
+          "value": "normal",
+          "label": "Normal"
+        },
+        {
+          "value": "sticky",
+          "label": "Sticky"
+        }
+      ]
+    },
+    {
+      "type": "checkbox",
+      "id": "sticky_index",
+      "label": "Overlay header over home page",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "sticky_collection",
+      "label": "Overlay header over collection",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Logo"
+    },
+    {
+      "type": "image_picker",
+      "id": "logo_image",
+      "label": "Logo image"
+    },
+    {
+      "type": "range",
+      "id": "logo_image_height",
+      "label": "Desktop logo image height",
+      "default": 50,
+      "min": 30,
+      "max": 160,
+      "step": 2,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mobile_logo_image_height",
+      "label": "Mobile logo image height",
+      "default": 40,
+      "min": 24,
+      "max": 140,
+      "step": 2,
+      "unit": "px"
+    },
+    {
+      "type": "text",
+      "id": "logo_text",
+      "label": "Logo text (fallback)",
+      "default": "plant organics"
+    },
+    {
+      "type": "text",
+      "id": "logo_subtext",
+      "label": "Logo subtext",
+      "default": "EST. 2019"
+    },
+    {
+      "type": "range",
+      "id": "logo_text_size",
+      "label": "Desktop logo text size",
+      "default": 24,
+      "min": 18,
+      "max": 34,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "mobile_logo_text_size",
+      "label": "Mobile logo text size",
+      "default": 19,
+      "min": 14,
+      "max": 26,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Search"
+    },
+    {
+      "type": "text",
+      "id": "search_placeholder",
+      "label": "Default search placeholder",
+      "default": "Search meals, plans, juices..."
+    },
+    {
+      "type": "text",
+      "id": "search_placeholder_animation",
+      "label": "Typing placeholder text",
+      "default": "Search weekly meals|Try Glow Plan|Find plant-based dishes|Search subscriptions"
+    },
+    {
+      "type": "header",
+      "content": "Order popup"
+    },
+    {
+      "type": "text",
+      "id": "order_button_text",
+      "label": "Button text",
+      "default": "Order Now"
+      
+    },
+    {
+  "type": "url",
+  "id": "order_button_link",
+  "label": "Order Now button product/page link",
+  "info": "Add a specific product or page link. If empty, the Order Now button will open the popup."
+},
+    {
+      "type": "collection",
+      "id": "popular_collection",
+      "label": "Popular products collection"
+    },
+    {
+      "type": "range",
+      "id": "popup_product_limit",
+      "label": "Products to show",
+      "default": 8,
+      "min": 2,
+      "max": 16,
+      "step": 1
+    },
+    {
+      "type": "text",
+      "id": "popup_eyebrow",
+      "label": "Popup eyebrow",
+      "default": "Popular Picks"
+    },
+    {
+      "type": "text",
+      "id": "popup_title",
+      "label": "Popup title",
+      "default": "Choose your meal plan"
+    },
+    {
+      "type": "textarea",
+      "id": "popup_text",
+      "label": "Popup text",
+      "default": "Select one of our most-loved plant-based options and continue directly to checkout."
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "range",
+      "id": "page_width",
+      "label": "Page width",
+      "default": 1320,
+      "min": 1100,
+      "max": 1600,
+      "step": 20,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "desktop_header_height",
+      "label": "Top row height",
+      "default": 72,
+      "min": 62,
+      "max": 96,
+      "step": 2,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "desktop_side_padding",
+      "label": "Desktop side padding",
+      "default": 28,
+      "min": 12,
+      "max": 60,
+      "step": 2,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "menu_gap",
+      "label": "Menu gap",
+      "default": 38,
+      "min": 18,
+      "max": 64,
+      "step": 2,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "menu_font_size",
+      "label": "Menu font size",
+      "default": 14,
+      "min": 12,
+      "max": 18,
+      "step": 1,
+      "unit": "px"
+    },
+    {
+      "type": "header",
+      "content": "Colors"
+    },
+    {
+      "type": "color",
+      "id": "header_bg",
+      "label": "Header background",
+      "default": "#F7F1E4"
+    },
+    {
+      "type": "color",
+      "id": "header_text",
+      "label": "Text color",
+      "default": "#073D27"
+    },
+    {
+      "type": "color",
+      "id": "header_green",
+      "label": "Primary green",
+      "default": "#073D27"
+    },
+    {
+      "type": "color",
+      "id": "header_accent",
+      "label": "Cart badge color",
+      "default": "#D8754B"
+    },
+    {
+      "type": "color",
+      "id": "header_border",
+      "label": "Border color",
+      "default": "#EEE1C9"
+    },
+    {
+      "type": "header",
+      "content": "Toolbar"
+    },
+    {
+      "type": "link_list",
+      "id": "toolbar_menu",
+      "label": "Navigation",
+      "info": "This menu won't show dropdown items"
+    },
+    {
+      "type": "checkbox",
+      "id": "toolbar_social",
+      "label": "Show social icons"
+    },
+    {
+      "type": "header",
+      "content": "Language selector"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_locale_selector",
+      "label": "Show language selector",
+      "default": false
+    },
+    {
+      "type": "header",
+      "content": "Currency selector"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_currency_selector",
+      "label": "Show currency selector",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_currency_flags",
+      "label": "Show currency flags",
+      "default": true
+    }
+  ],
+  "blocks": [
+    {
+      "type": "above_header_liquid",
+      "name": "Above header liquid",
+      "settings": [
+        {
+          "type": "liquid",
+          "id": "custom_liquid",
+          "label": "Custom liquid"
+        }
+      ]
+    },
+    {
+      "type": "above_header_announcement",
+      "name": "Above header announcement",
+      "settings": [
+        {
+          "type": "text",
+          "id": "left_text",
+          "label": "Left text",
+          "default": "100% Organic & Locally Sourced"
+        },
+        {
+          "type": "text",
+          "id": "center_text",
+          "label": "Center text",
+          "default": "Delivered Fresh Every Monday"
+        },
+        {
+          "type": "text",
+          "id": "link_text",
+          "label": "Link text",
+          "default": "Shop Now"
+        },
+        {
+          "type": "url",
+          "id": "link",
+          "label": "Link"
+        },
+        {
+          "type": "color",
+          "id": "bg_color",
+          "label": "Background",
+          "default": "#073D27"
+        },
+        {
+          "type": "color",
+          "id": "text_color",
+          "label": "Text color",
+          "default": "#F7F1E4"
+        },
+        {
+          "type": "color",
+          "id": "accent_color",
+          "label": "Accent/link color",
+          "default": "#F1C858"
+        }
+      ]
+    }
+  ],
+  "default": {
+    "settings": {}
+  }
+}
+{% endschema %}

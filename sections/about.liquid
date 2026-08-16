@@ -1,0 +1,1039 @@
+<section
+  class="po-about-page po-split po-section"
+  id="po-about-page-{{ section.id }}"
+  style="
+    --po-page-width: {{ section.settings.page_width }}px;
+    --po-cream: {{ section.settings.cream }};
+    --po-cream-deep: {{ section.settings.cream_deep }};
+    --po-forest: {{ section.settings.forest }};
+    --po-forest-deep: {{ section.settings.forest_deep }};
+    --po-terracotta: {{ section.settings.terracotta }};
+    --po-honey: {{ section.settings.honey }};
+    --po-ink: {{ section.settings.ink }};
+  "
+>
+  <style>
+    .po-about-page,
+    .po-about-page * {
+      box-sizing: border-box;
+    }
+
+    .po-about-page {
+      width: 100%;
+      background: var(--po-cream);
+      color: var(--po-ink);
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      overflow: hidden;
+    }
+
+    .po-about-page__container {
+      width: 100%;
+      max-width: var(--po-page-width);
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .po-about-page__hero {
+      position: relative;
+      min-height: {{ section.settings.hero_height }}px;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+      background: var(--po-forest-deep);
+      isolation: isolate;
+    }
+
+    .po-about-page__hero-media {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+    }
+
+    .po-about-page__hero-media img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .po-about-page__hero::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      background:
+        linear-gradient(90deg, rgba(7,61,39,.86) 0%, rgba(7,61,39,.62) 45%, rgba(7,61,39,.18) 100%),
+        radial-gradient(circle at 24% 35%, rgba(241,200,88,.18), transparent 34%);
+      pointer-events: none;
+    }
+
+    .po-about-page__hero-inner {
+      position: relative;
+      z-index: 3;
+      width: 100%;
+      max-width: var(--po-page-width);
+      margin: 0 auto;
+      padding: 72px 24px;
+    }
+
+    .po-about-page__pill {
+      width: fit-content;
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
+      min-height: 34px;
+      padding: 0 15px;
+      border-radius: 999px;
+      background: rgba(241, 200, 88, 0.16);
+      border: 1px solid rgba(241, 200, 88, 0.36);
+      color: var(--po-honey);
+      font-size: 11px;
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      margin-bottom: 22px;
+      backdrop-filter: blur(12px);
+    }
+
+    .po-about-page__pill::before {
+      content: "";
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--po-honey);
+      box-shadow: 0 0 0 5px rgba(241, 200, 88, 0.13);
+    }
+
+    .po-about-page__hero-title {
+      max-width: 720px;
+      margin: 0;
+      color: var(--po-cream);
+      font-family: Fraunces, Georgia, serif;
+      font-size: clamp(48px, 7vw, 92px);
+      line-height: .95;
+      letter-spacing: -.058em;
+      font-weight: 650;
+    }
+
+    .po-about-page__hero-title em {
+      color: var(--po-honey);
+      font-style: italic;
+      font-weight: 520;
+    }
+
+    .po-about-page__hero-text {
+      max-width: 610px;
+      margin: 24px 0 0;
+      color: rgba(247,241,228,.84);
+      font-size: clamp(16px, 1.35vw, 19px);
+      line-height: 1.68;
+      font-weight: 500;
+    }
+
+    .po-about-page__intro {
+      padding: 76px 0 54px;
+      text-align: center;
+    }
+
+    .po-about-page__eyebrow {
+      width: fit-content;
+      margin: 0 auto 16px;
+      color: var(--po-terracotta);
+      font-size: 12px;
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+    }
+
+    .po-about-page__title {
+      margin: 0 auto;
+      max-width: 780px;
+      color: var(--po-forest-deep);
+      font-family: Fraunces, Georgia, serif;
+      font-size: clamp(36px, 4.6vw, 66px);
+      line-height: 1;
+      letter-spacing: -.055em;
+      font-weight: 650;
+    }
+
+    .po-about-page__title .accent {
+      color: var(--po-terracotta);
+      font-style: italic;
+      font-weight: 520;
+    }
+
+    .po-about-page__soft {
+      max-width: 760px;
+      margin: 22px auto 0;
+      color: rgba(30,43,33,.72);
+      font-size: 16.5px;
+      line-height: 1.72;
+      font-weight: 500;
+    }
+
+    .po-about-page__split {
+      display: grid;
+      grid-template-columns: minmax(300px, .9fr) minmax(360px, 1.1fr);
+      gap: 68px;
+      align-items: center;
+      padding: 56px 0;
+    }
+
+    .po-about-page__split.is-reverse {
+      grid-template-columns: minmax(360px, 1.1fr) minmax(300px, .9fr);
+    }
+
+    .po-about-page__image-card {
+      position: relative;
+      border-radius: 34px;
+      overflow: hidden;
+      background: var(--po-cream-deep);
+      box-shadow: 0 26px 64px rgba(7, 61, 39, .12);
+    }
+
+    .po-about-page__image-card img {
+      width: 100%;
+      height: 440px;
+      object-fit: cover;
+      display: block;
+    }
+
+    .po-about-page__image-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(7,61,39,.02), rgba(7,61,39,.16)),
+        radial-gradient(circle at 20% 18%, rgba(241,200,88,.16), transparent 34%);
+      pointer-events: none;
+    }
+
+    .po-about-page__content {
+      max-width: 610px;
+    }
+
+    .po-about-page__section-label {
+      color: var(--po-terracotta);
+      font-size: 11px;
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .po-about-page__section-title {
+      margin: 0;
+      color: var(--po-forest-deep);
+      font-family: Fraunces, Georgia, serif;
+      font-size: clamp(32px, 3.8vw, 54px);
+      line-height: 1;
+      letter-spacing: -.052em;
+      font-weight: 650;
+    }
+
+    .po-about-page__section-title em {
+      color: var(--po-terracotta);
+      font-style: italic;
+      font-weight: 520;
+    }
+
+    .po-about-page__text {
+      margin: 20px 0 0;
+      color: rgba(30,43,33,.72);
+      font-size: 15.8px;
+      line-height: 1.72;
+      font-weight: 500;
+    }
+
+    .po-about-page__list {
+      list-style: none;
+      padding: 0;
+      margin: 24px 0 0;
+      display: grid;
+      gap: 10px;
+    }
+
+    .po-about-page__list li {
+      position: relative;
+      padding-left: 25px;
+      color: rgba(30,43,33,.72);
+      font-size: 15px;
+      line-height: 1.5;
+      font-weight: 550;
+    }
+
+    .po-about-page__list li::before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      top: 0;
+      color: var(--po-forest);
+      font-weight: 950;
+    }
+
+    .po-about-page__feature-box {
+      margin-top: 26px;
+      padding: 22px 24px;
+      border-radius: 24px;
+      background: rgba(255,255,255,.58);
+      border: 1px solid rgba(7,61,39,.1);
+      color: rgba(30,43,33,.72);
+      font-size: 15px;
+      line-height: 1.62;
+      font-weight: 500;
+      box-shadow: 0 16px 42px rgba(7,61,39,.07);
+    }
+
+    .po-about-page__center-section {
+      padding: 58px 0;
+      text-align: center;
+    }
+
+    .po-about-page__center-section .po-about-page__text {
+      max-width: 760px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .po-about-page__center-list {
+      width: fit-content;
+      max-width: 100%;
+      margin: 24px auto 0;
+      text-align: left;
+      display: grid;
+      gap: 10px;
+      list-style: none;
+      padding: 0;
+    }
+
+    .po-about-page__center-list li {
+      position: relative;
+      padding-left: 24px;
+      color: rgba(30,43,33,.72);
+      font-size: 15px;
+      line-height: 1.5;
+      font-weight: 550;
+    }
+
+    .po-about-page__center-list li::before {
+      content: "•";
+      position: absolute;
+      left: 5px;
+      color: var(--po-terracotta);
+      font-weight: 900;
+    }
+
+    .po-about-page__cta {
+      margin: 56px 0 0;
+      padding: 48px 28px;
+      border-radius: 36px;
+      background:
+        radial-gradient(circle at 18% 14%, rgba(241,200,88,.18), transparent 34%),
+        linear-gradient(135deg, var(--po-forest-deep), #052f1e);
+      color: var(--po-cream);
+      text-align: center;
+      box-shadow: 0 28px 70px rgba(7,61,39,.18);
+    }
+
+    .po-about-page__cta h3 {
+      margin: 0;
+      color: var(--po-cream);
+      font-family: Fraunces, Georgia, serif;
+      font-size: clamp(32px, 4vw, 54px);
+      line-height: 1;
+      letter-spacing: -.052em;
+      font-weight: 650;
+    }
+
+    .po-about-page__cta p {
+      margin: 18px auto 0;
+      max-width: 620px;
+      color: rgba(247,241,228,.78);
+      font-size: 16px;
+      line-height: 1.62;
+      font-weight: 500;
+    }
+
+    .po-about-page__btn {
+      margin-top: 28px;
+      min-height: 52px;
+      padding: 0 26px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--po-honey);
+      color: var(--po-forest-deep);
+      text-decoration: none;
+      font-size: 12.5px;
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      box-shadow: 0 18px 42px rgba(0,0,0,.18);
+      transition: transform .25s ease, box-shadow .25s ease;
+    }
+
+    .po-about-page__btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 24px 52px rgba(0,0,0,.24);
+    }
+
+    .po-about-page__testimonials {
+      padding: 70px 0 86px;
+    }
+
+    .po-about-page__testimonial-grid {
+      margin-top: 34px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+    }
+
+    .po-about-page__testimonial {
+      padding: 30px;
+      border-radius: 28px;
+      background: rgba(255,255,255,.64);
+      border: 1px solid rgba(7,61,39,.1);
+      box-shadow: 0 20px 50px rgba(7,61,39,.08);
+      text-align: center;
+    }
+
+    .po-about-page__stars {
+      color: var(--po-terracotta);
+      letter-spacing: .12em;
+      margin-bottom: 14px;
+      font-size: 13px;
+    }
+
+    .po-about-page__quote {
+      color: rgba(30,43,33,.72);
+      font-size: 15px;
+      line-height: 1.62;
+      font-weight: 500;
+      margin: 0;
+    }
+
+    .po-about-page__author {
+      margin-top: 16px;
+      color: var(--po-forest-deep);
+      font-size: 12px;
+      line-height: 1;
+      font-weight: 900;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+    }
+
+    @media (max-width: 980px) {
+      .po-about-page__hero {
+        min-height: 560px;
+      }
+
+      .po-about-page__split,
+      .po-about-page__split.is-reverse {
+        grid-template-columns: 1fr;
+        gap: 34px;
+        padding: 46px 0;
+      }
+
+      .po-about-page__split.is-reverse .po-about-page__image-card {
+        order: -1;
+      }
+
+      .po-about-page__content {
+        max-width: 760px;
+      }
+
+      .po-about-page__testimonial-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .po-about-page__container,
+      .po-about-page__hero-inner {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      .po-about-page__hero {
+        min-height: 620px;
+      }
+
+      .po-about-page__hero::after {
+        background:
+          linear-gradient(180deg, rgba(7,61,39,.46) 0%, rgba(7,61,39,.84) 60%, rgba(7,61,39,.94) 100%);
+      }
+
+      .po-about-page__hero-inner {
+        align-self: flex-end;
+        padding-top: 90px;
+        padding-bottom: 46px;
+      }
+
+      .po-about-page__hero-title {
+        font-size: clamp(40px, 13vw, 58px);
+      }
+
+      .po-about-page__hero-text,
+      .po-about-page__soft,
+      .po-about-page__text {
+        font-size: 15px;
+        line-height: 1.62;
+      }
+
+      .po-about-page__intro {
+        padding: 58px 0 32px;
+      }
+
+      .po-about-page__image-card {
+        border-radius: 26px;
+      }
+
+      .po-about-page__image-card img {
+        height: 320px;
+      }
+
+      .po-about-page__center-section {
+        padding: 42px 0;
+      }
+
+      .po-about-page__cta {
+        margin-top: 38px;
+        padding: 38px 20px;
+        border-radius: 28px;
+      }
+
+      .po-about-page__testimonials {
+        padding: 54px 0 68px;
+      }
+
+      .po-about-page__testimonial {
+        padding: 24px 20px;
+      }
+    }
+  </style>
+
+  <div class="po-about-page__hero">
+    <div class="po-about-page__hero-media">
+      {%- if section.settings.hero_image != blank -%}
+        {{ section.settings.hero_image | image_url: width: 2400 | image_tag: loading: 'eager', alt: section.settings.hero_alt }}
+      {%- else -%}
+        <img src="https://cdn.shopify.com/s/files/1/0787/2761/0619/files/healthy_meal_prep_bowls_with_fresh_herbs.png?v=1780297793" alt="{{ section.settings.hero_alt | escape }}" loading="eager">
+      {%- endif -%}
+    </div>
+
+    <div class="po-about-page__hero-inner">
+      <div class="po-about-page__pill">{{ section.settings.hero_kicker }}</div>
+      <h1 class="po-about-page__hero-title">{{ section.settings.hero_title }}</h1>
+      <p class="po-about-page__hero-text">{{ section.settings.hero_text }}</p>
+    </div>
+  </div>
+
+  <div class="po-about-page__container">
+    <div class="po-about-page__intro">
+      <div class="po-about-page__eyebrow">{{ section.settings.intro_kicker }}</div>
+      <h2 class="po-about-page__title">{{ section.settings.intro_title }}</h2>
+      <div class="po-about-page__soft">{{ section.settings.intro_text }}</div>
+    </div>
+
+    <div class="po-about-page__split">
+      <div class="po-about-page__content">
+        <div class="po-about-page__section-label">{{ section.settings.mission_kicker }}</div>
+        <h3 class="po-about-page__section-title">{{ section.settings.mission_title }}</h3>
+        <div class="po-about-page__text">{{ section.settings.mission_text }}</div>
+        <ul class="po-about-page__list">
+          <li>Clean ingredients</li>
+          <li>Chef-prepared meals</li>
+          <li>Transparent sourcing</li>
+          <li>Simple weekly convenience</li>
+        </ul>
+      </div>
+
+      <div class="po-about-page__image-card">
+        {%- if section.settings.mission_image != blank -%}
+          {{ section.settings.mission_image | image_url: width: 1200 | image_tag: loading: 'lazy', alt: section.settings.mission_alt }}
+        {%- else -%}
+          <img src="https://cdn.shopify.com/s/files/1/0787/2761/0619/files/healthy_meal_prep_flat_lay_spread.png?v=1780297792" alt="{{ section.settings.mission_alt | escape }}" loading="lazy">
+        {%- endif -%}
+      </div>
+    </div>
+
+    <div class="po-about-page__center-section">
+      <div class="po-about-page__section-label">{{ section.settings.sourcing_kicker }}</div>
+      <h3 class="po-about-page__section-title">{{ section.settings.sourcing_title }}</h3>
+      <div class="po-about-page__text">{{ section.settings.sourcing_text }}</div>
+      <ul class="po-about-page__center-list">
+        <li>Fresh produce</li>
+        <li>Whole ingredients</li>
+        <li>Balanced recipes</li>
+        <li>Responsibly sourced proteins</li>
+        <li>Organic ingredients whenever possible</li>
+      </ul>
+    </div>
+
+    <div class="po-about-page__split is-reverse">
+      <div class="po-about-page__image-card">
+        {%- if section.settings.founder_image != blank -%}
+          {{ section.settings.founder_image | image_url: width: 1200 | image_tag: loading: 'lazy', alt: section.settings.founder_alt }}
+        {%- else -%}
+          <img src="https://cdn.shopify.com/s/files/1/0787/2761/0619/files/about-founder.jpg?v=1780297792" alt="{{ section.settings.founder_alt | escape }}" loading="lazy">
+        {%- endif -%}
+      </div>
+
+      <div class="po-about-page__content">
+        <div class="po-about-page__section-label">{{ section.settings.founder_kicker }}</div>
+        <h3 class="po-about-page__section-title">{{ section.settings.founder_title }}</h3>
+        <div class="po-about-page__text">{{ section.settings.founder_text }}</div>
+        <div class="po-about-page__feature-box">{{ section.settings.founder_note }}</div>
+      </div>
+    </div>
+
+    <div class="po-about-page__center-section">
+      <div class="po-about-page__section-label">{{ section.settings.organic_kicker }}</div>
+      <h3 class="po-about-page__section-title">{{ section.settings.organic_title }}</h3>
+      <div class="po-about-page__text">{{ section.settings.organic_text }}</div>
+      <ul class="po-about-page__center-list">
+        <li>Organic produce whenever available</li>
+        <li>Seasonal ingredients</li>
+        <li>Minimally processed foods</li>
+        <li>Sustainable sourcing practices</li>
+      </ul>
+    </div>
+
+    <div class="po-about-page__split">
+      <div class="po-about-page__content">
+        <div class="po-about-page__section-label">{{ section.settings.sustainability_kicker }}</div>
+        <h3 class="po-about-page__section-title">{{ section.settings.sustainability_title }}</h3>
+        <div class="po-about-page__text">{{ section.settings.sustainability_text }}</div>
+        <ul class="po-about-page__list">
+          <li>Less unnecessary packaging</li>
+          <li>Reduced food waste</li>
+          <li>Responsible sourcing</li>
+          <li>Better weekly meal planning</li>
+        </ul>
+      </div>
+
+      <div class="po-about-page__image-card">
+        {%- if section.settings.sustainability_image != blank -%}
+          {{ section.settings.sustainability_image | image_url: width: 1200 | image_tag: loading: 'lazy', alt: section.settings.sustainability_alt }}
+        {%- else -%}
+          <img src="https://cdn.shopify.com/s/files/1/0787/2761/0619/files/healthy_meal_prep_on_a_vibrant_countertop.png?v=1780297792" alt="{{ section.settings.sustainability_alt | escape }}" loading="lazy">
+        {%- endif -%}
+      </div>
+    </div>
+
+    <div class="po-about-page__center-section">
+      <div class="po-about-page__section-label">{{ section.settings.fresh_kicker }}</div>
+      <h3 class="po-about-page__section-title">{{ section.settings.fresh_title }}</h3>
+      <div class="po-about-page__text">{{ section.settings.fresh_text }}</div>
+      <ul class="po-about-page__center-list">
+        <li>Meals are freshly prepared weekly</li>
+        <li>Never frozen</li>
+        <li>Delivered in insulated packaging</li>
+        <li>Ready to heat and enjoy in minutes</li>
+      </ul>
+    </div>
+
+    <div class="po-about-page__cta">
+      <h3>{{ section.settings.cta_title }}</h3>
+      <p>{{ section.settings.cta_text }}</p>
+      <a href="{{ section.settings.cta_link }}" class="po-about-page__btn">{{ section.settings.cta_label }}</a>
+    </div>
+
+    <div class="po-about-page__testimonials">
+      <div class="po-about-page__eyebrow">Testimonials</div>
+      <h3 class="po-about-page__title">{{ section.settings.testimonial_title }}</h3>
+
+      <div class="po-about-page__testimonial-grid">
+        {%- for block in section.blocks -%}
+          {%- if block.type == 'testimonial' -%}
+            <div class="po-about-page__testimonial" {{ block.shopify_attributes }}>
+              <div class="po-about-page__stars">★★★★★</div>
+              <p class="po-about-page__quote">“{{ block.settings.quote }}”</p>
+              <div class="po-about-page__author">— {{ block.settings.author }}</div>
+            </div>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    </div>
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "PO About Us Page",
+  "settings": [
+    {
+      "type": "range",
+      "id": "page_width",
+      "label": "Page width",
+      "default": 1280,
+      "min": 960,
+      "max": 1600,
+      "step": 20,
+      "unit": "px"
+    },
+    {
+      "type": "range",
+      "id": "hero_height",
+      "label": "Hero height",
+      "default": 620,
+      "min": 420,
+      "max": 820,
+      "step": 20,
+      "unit": "px"
+    },
+    {
+      "type": "color",
+      "id": "cream",
+      "label": "Cream",
+      "default": "#F7F1E4"
+    },
+    {
+      "type": "color",
+      "id": "cream_deep",
+      "label": "Cream deep",
+      "default": "#EEE1C9"
+    },
+    {
+      "type": "color",
+      "id": "forest",
+      "label": "Forest",
+      "default": "#2F7A4E"
+    },
+    {
+      "type": "color",
+      "id": "forest_deep",
+      "label": "Forest deep",
+      "default": "#073D27"
+    },
+    {
+      "type": "color",
+      "id": "terracotta",
+      "label": "Terracotta",
+      "default": "#C96E3C"
+    },
+    {
+      "type": "color",
+      "id": "honey",
+      "label": "Honey",
+      "default": "#F1C858"
+    },
+    {
+      "type": "color",
+      "id": "ink",
+      "label": "Ink",
+      "default": "#1E2B21"
+    },
+    {
+      "type": "header",
+      "content": "Hero"
+    },
+    {
+      "type": "image_picker",
+      "id": "hero_image",
+      "label": "Hero image"
+    },
+    {
+      "type": "text",
+      "id": "hero_alt",
+      "label": "Hero image alt",
+      "default": "Fresh organic Plant Organics meals"
+    },
+    {
+      "type": "text",
+      "id": "hero_kicker",
+      "label": "Hero kicker",
+      "default": "Real food. Real ingredients."
+    },
+    {
+      "type": "textarea",
+      "id": "hero_title",
+      "label": "Hero title",
+      "default": "Fresh food, real ingredients, <em>better living.</em>"
+    },
+    {
+      "type": "textarea",
+      "id": "hero_text",
+      "label": "Hero text",
+      "default": "At Plant Organics, we believe healthy eating should feel simple, nourishing, and enjoyable."
+    },
+    {
+      "type": "header",
+      "content": "Intro"
+    },
+    {
+      "type": "text",
+      "id": "intro_kicker",
+      "label": "Intro kicker",
+      "default": "About Plant Organics"
+    },
+    {
+      "type": "textarea",
+      "id": "intro_title",
+      "label": "Intro title",
+      "default": "Fresh food. Real ingredients. Better living."
+    },
+    {
+      "type": "richtext",
+      "id": "intro_text",
+      "label": "Intro text",
+      "default": "<p>Life gets busy, and preparing balanced meals every single day is not always realistic. Between work, family, responsibilities, and everything in between, finding the time to shop, prep, and cook can quickly become overwhelming. That is why we created Plant Organics — to make eating well feel easier without sacrificing quality, flavor, or freshness.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Mission"
+    },
+    {
+      "type": "image_picker",
+      "id": "mission_image",
+      "label": "Mission image"
+    },
+    {
+      "type": "text",
+      "id": "mission_alt",
+      "label": "Mission image alt",
+      "default": "Prepared organic meals with fresh ingredients"
+    },
+    {
+      "type": "text",
+      "id": "mission_kicker",
+      "label": "Mission kicker",
+      "default": "Our Mission"
+    },
+    {
+      "type": "textarea",
+      "id": "mission_title",
+      "label": "Mission title",
+      "default": "Make healthy eating simple, <em>not stressful.</em>"
+    },
+    {
+      "type": "richtext",
+      "id": "mission_text",
+      "label": "Mission text",
+      "default": "<p>Our goal is to make fresh, nourishing meals more convenient for busy individuals and families who want to prioritize wellness without depending on cooking every week.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Sourcing"
+    },
+    {
+      "type": "text",
+      "id": "sourcing_kicker",
+      "label": "Sourcing kicker",
+      "default": "Sourcing"
+    },
+    {
+      "type": "textarea",
+      "id": "sourcing_title",
+      "label": "Sourcing title",
+      "default": "Thoughtfully sourced ingredients"
+    },
+    {
+      "type": "richtext",
+      "id": "sourcing_text",
+      "label": "Sourcing text",
+      "default": "<p>We believe great meals start with great ingredients. That is why we prioritize fresh produce, whole ingredients, balanced recipes, and responsibly sourced proteins whenever possible.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Founder"
+    },
+    {
+      "type": "image_picker",
+      "id": "founder_image",
+      "label": "Founder image"
+    },
+    {
+      "type": "text",
+      "id": "founder_alt",
+      "label": "Founder image alt",
+      "default": "Plant Organics founder in kitchen"
+    },
+    {
+      "type": "text",
+      "id": "founder_kicker",
+      "label": "Founder kicker",
+      "default": "Meet Our Founder"
+    },
+    {
+      "type": "textarea",
+      "id": "founder_title",
+      "label": "Founder title",
+      "default": "Built from a love of real food."
+    },
+    {
+      "type": "richtext",
+      "id": "founder_text",
+      "label": "Founder text",
+      "default": "<p>Plant Organics was inspired by the everyday challenge so many people face — wanting to eat well, feel better, and live with more energy, but not always having the time to cook from scratch every day.</p>"
+    },
+    {
+      "type": "textarea",
+      "id": "founder_note",
+      "label": "Founder note",
+      "default": "What started as a personal passion for wellness and intentional living has grown into a service that helps more people enjoy real, nourishing food without the stress."
+    },
+    {
+      "type": "header",
+      "content": "Organic"
+    },
+    {
+      "type": "text",
+      "id": "organic_kicker",
+      "label": "Organic kicker",
+      "default": "Organic Ingredients"
+    },
+    {
+      "type": "textarea",
+      "id": "organic_title",
+      "label": "Organic title",
+      "default": "Organic ingredients whenever possible"
+    },
+    {
+      "type": "richtext",
+      "id": "organic_text",
+      "label": "Organic text",
+      "default": "<p>At Plant Organics, ingredient quality matters deeply to us. Whenever possible, we prioritize organic produce, seasonal ingredients, minimally processed foods, and sustainable sourcing practices.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Sustainability"
+    },
+    {
+      "type": "image_picker",
+      "id": "sustainability_image",
+      "label": "Sustainability image"
+    },
+    {
+      "type": "text",
+      "id": "sustainability_alt",
+      "label": "Sustainability image alt",
+      "default": "Fresh prepared meals in containers"
+    },
+    {
+      "type": "text",
+      "id": "sustainability_kicker",
+      "label": "Sustainability kicker",
+      "default": "Sustainability"
+    },
+    {
+      "type": "textarea",
+      "id": "sustainability_title",
+      "label": "Sustainability title",
+      "default": "Sustainability matters"
+    },
+    {
+      "type": "richtext",
+      "id": "sustainability_text",
+      "label": "Sustainability text",
+      "default": "<p>We care deeply about how food impacts both people and the planet. By preparing meals with intention, we help reduce unnecessary food waste and make it easier to eat with more purpose.</p>"
+    },
+    {
+      "type": "header",
+      "content": "Fresh vs Frozen"
+    },
+    {
+      "type": "text",
+      "id": "fresh_kicker",
+      "label": "Fresh kicker",
+      "default": "Fresh vs. Frozen"
+    },
+    {
+      "type": "textarea",
+      "id": "fresh_title",
+      "label": "Fresh title",
+      "default": "Fresh meals, never frozen"
+    },
+    {
+      "type": "richtext",
+      "id": "fresh_text",
+      "label": "Fresh text",
+      "default": "<p>One of the things that makes Plant Organics different is our commitment to fresh meals. Many meal delivery companies rely heavily on frozen meals that may remain stored for long periods before reaching customers.</p>"
+    },
+    {
+      "type": "header",
+      "content": "CTA"
+    },
+    {
+      "type": "textarea",
+      "id": "cta_title",
+      "label": "CTA title",
+      "default": "Ready to make healthy eating effortless?"
+    },
+    {
+      "type": "textarea",
+      "id": "cta_text",
+      "label": "CTA text",
+      "default": "Start your Plant Organics journey with fresh meals prepared for real life."
+    },
+    {
+      "type": "text",
+      "id": "cta_label",
+      "label": "CTA label",
+      "default": "Explore the menu"
+    },
+    {
+      "type": "url",
+      "id": "cta_link",
+      "label": "CTA link"
+    },
+    {
+      "type": "header",
+      "content": "Testimonials"
+    },
+    {
+      "type": "textarea",
+      "id": "testimonial_title",
+      "label": "Testimonial title",
+      "default": "Loved by people who want eating well to feel easier."
+    }
+  ],
+  "blocks": [
+    {
+      "type": "testimonial",
+      "name": "Testimonial",
+      "settings": [
+        {
+          "type": "textarea",
+          "id": "quote",
+          "label": "Quote",
+          "default": "Plant Organics made it easier to eat well without spending my whole weekend meal prepping."
+        },
+        {
+          "type": "text",
+          "id": "author",
+          "label": "Author",
+          "default": "Lena R."
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "PO About Us Page",
+      "blocks": [
+        {
+          "type": "testimonial",
+          "settings": {
+            "quote": "Plant Organics made it easier to eat well without spending my whole weekend meal prepping.",
+            "author": "Lena R."
+          }
+        },
+        {
+          "type": "testimonial",
+          "settings": {
+            "quote": "The meals feel fresh, thoughtful, and truly convenient. It changed my weekly routine.",
+            "author": "Maya T."
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

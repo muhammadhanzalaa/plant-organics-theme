@@ -1,0 +1,658 @@
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700;800;900&family=Montserrat:wght@400;500;600;700;800;900&display=swap');
+
+  #shopify-section-{{ section.id }} .po-simple-addons,
+  #shopify-section-{{ section.id }} .po-simple-addons * {
+    box-sizing: border-box;
+  }
+
+  #shopify-section-{{ section.id }} .po-simple-addons {
+    --po-dark: #293f07;
+    --po-muted: #6f7c55;
+    --po-soft-green: #f1f4e9;
+    --po-orange: #ff960e;
+    --po-orange-soft: #fff0dd;
+    --po-pink-soft: #fff2fb;
+    --po-green-soft: #edf2df;
+    --po-card: rgba(255, 255, 255, 0.82);
+    --po-border: rgba(41, 63, 7, 0.12);
+    --po-shadow: 0 18px 55px rgba(41, 63, 7, 0.08);
+    --po-heading: "Bricolage Grotesque", "Montserrat", sans-serif;
+    --po-body: "Montserrat", Arial, sans-serif;
+    --po-width: 1280px;
+
+    width: 100%;
+    overflow: hidden;
+    padding: clamp(30px, 5vw, 58px) 18px clamp(42px, 6vw, 72px);
+    background:
+      radial-gradient(circle at 6% 4%, rgba(255, 150, 14, 0.08), transparent 28%),
+      radial-gradient(circle at 100% 0%, rgba(252, 182, 235, 0.12), transparent 28%),
+      linear-gradient(180deg, #fff7ea 0%, #fff1df 100%);
+    color: var(--po-dark);
+    font-family: var(--po-body);
+  }
+
+  #shopify-section-{{ section.id }} .po-simple-addons__container {
+    width: 100%;
+    max-width: var(--po-width);
+    margin: 0 auto;
+  }
+
+  #shopify-section-{{ section.id }} .po-simple-addons__header {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 22px;
+  }
+
+  #shopify-section-{{ section.id }} .po-simple-addons__title {
+    margin: 0;
+    color: var(--po-dark);
+    font-family: var(--po-heading);
+    font-size: clamp(36px, 4.6vw, 58px);
+    line-height: 0.9;
+    letter-spacing: -0.055em;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  #shopify-section-{{ section.id }} .po-simple-addons__subtitle {
+    max-width: 860px;
+    margin: 10px 0 0;
+    color: var(--po-muted);
+    font-family: var(--po-heading);
+    font-size: clamp(13px, 1.2vw, 15px);
+    line-height: 1.45;
+    font-weight: 800;
+    letter-spacing: 0.01em;
+  }
+
+  #shopify-section-{{ section.id }} .po-simple-addons__button {
+    min-height: 38px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 18px;
+    border-radius: 999px;
+    background: rgba(255, 244, 229, 0.65);
+    border: 1px solid rgba(255, 150, 14, 0.38);
+    color: var(--po-dark);
+    text-decoration: none;
+    font-family: var(--po-heading);
+    font-size: 12px;
+    line-height: 1;
+    font-weight: 900;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    white-space: nowrap;
+    transition: 0.22s ease;
+  }
+
+  #shopify-section-{{ section.id }} .po-simple-addons__button:hover {
+    background: var(--po-orange);
+    border-color: var(--po-orange);
+    color: var(--po-dark);
+    text-decoration: none;
+    transform: translateY(-1px);
+  }
+
+  #shopify-section-{{ section.id }} .po-simple-addons__grid {
+    display: grid;
+    grid-template-columns: repeat({{ section.settings.columns_desktop }}, minmax(0, 1fr));
+    gap: clamp(18px, 2vw, 24px);
+  }
+
+  #shopify-section-{{ section.id }} .po-simple-addon-card {
+    position: relative;
+    min-width: 0;
+    min-height: 336px;
+    overflow: hidden;
+    border-radius: 26px;
+    background: var(--po-card);
+    border: 1px solid var(--po-border);
+    box-shadow: var(--po-shadow);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    transition:
+      transform 0.24s ease,
+      box-shadow 0.24s ease,
+      border-color 0.24s ease,
+      background 0.24s ease;
+  }
+
+  #shopify-section-{{ section.id }} .po-simple-addon-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(255, 150, 14, 0.32);
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow: 0 24px 70px rgba(41, 63, 7, 0.12);
+  }
+
+  #shopify-section-{{ section.id }} .po-simple-addon-card__shape {
+    position: absolute;
+    z-index: 1;
+    top: -56px;
+    right: -42px;
+    width: 130px;
+    height: 130px;
+    border-radius: 999px;
+    background: var(--po-green-soft);
+    pointer-events: none;
+  }
+
+  #shopify-section-{{ section.id }} .po-simple-addon-card:nth-child(3n+2) .po-simple-addon-card__shape {
+    background: var(--po-orange-soft);
+  }
+
+  #shopify-section-{{ section.id }} .po-simple-addon-card:nth-child(3n+3) .po-simple-addon-card__shape {
+    background: var(--po-pink-soft);
+  }
+
+  #shopify-section-{{ section.id }} .po-simple-addon-card__inner {
+    position: relative;
+    z-index: 2;
+    padding: clamp(20px, 2vw, 24px);
+  }
+
+  #shopify-section-{{ section.id }} .po-simple-addon-card__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+
+  #shopify-section-{{ section.id }} .po-simple-addon-card__title {
+    margin: 0;
+    max-width: 92%;
+    color: var(--po-dark);
+    font-family: var(--po-heading);
+    font-size: clamp(24px, 2.2vw, 30px);
+    line-height: 0.95;
+    letter-spacing: -0.055em;
+    font-weight: 900;
+    text-transform: uppercase;
+  }
+
+  #shopify-section-{{ section.id }} .po-simple-addon-card__count {
+    flex: 0 0 auto;
+    min-height: 28px;
+    display: inline-flex;
+    align-items: center;
+    padding: 0 9px;
+    border-radius: 999px;
+    background: rgba(149, 173, 79, 0.13);
+    border: 1px solid rgba(149, 173, 79, 0.2);
+    color: var(--po-muted);
+    font-family: var(--po-heading);
+    font-size: 10px;
+    font-weight: 900;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+
+  #shopify-section-{{ section.id }} .po-simple-addon-card__list {
+    display: grid;
+    gap: 10px;
+  }
+
+  #shopify-section-{{ section.id }} .po-simple-addon-item {
+    min-height: 58px;
+    display: grid;
+    grid-template-columns: 44px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 11px;
+    padding: 7px 11px 7px 7px;
+    border-radius: 17px;
+    background: var(--po-soft-green);
+    color: var(--po-dark);
+    text-decoration: none;
+    transition:
+      transform 0.2s ease,
+      background 0.2s ease,
+      box-shadow 0.2s ease;
+  }
+
+  #shopify-section-{{ section.id }} .po-simple-addon-item:hover {
+    background: rgba(255, 150, 14, 0.13);
+    text-decoration: none;
+    transform: translateX(3px);
+    box-shadow: 0 8px 20px rgba(41, 63, 7, 0.06);
+  }
+
+  #shopify-section-{{ section.id }} .po-simple-addon-item__image {
+    width: 44px;
+    height: 44px;
+    display: block;
+    object-fit: cover;
+    border-radius: 13px;
+    background: #ffffff;
+    border: 1px solid rgba(41, 63, 7, 0.06);
+    box-shadow: 0 5px 14px rgba(41, 63, 7, 0.06);
+  }
+
+  #shopify-section-{{ section.id }} .po-simple-addon-item__content {
+    min-width: 0;
+  }
+
+  #shopify-section-{{ section.id }} .po-simple-addon-item__title {
+    display: block;
+    overflow: hidden;
+    color: var(--po-dark);
+    font-family: var(--po-heading);
+    font-size: 14px;
+    line-height: 1.12;
+    font-weight: 900;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  #shopify-section-{{ section.id }} .po-simple-addon-item__price {
+    display: block;
+    margin-top: 4px;
+    color: rgba(41, 63, 7, 0.58);
+    font-size: 11px;
+    line-height: 1;
+    font-weight: 800;
+  }
+
+  #shopify-section-{{ section.id }} .po-simple-addon-item__tag {
+    min-width: 30px;
+    min-height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 8px;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid rgba(41, 63, 7, 0.08);
+    color: var(--po-green);
+    font-family: var(--po-heading);
+    font-size: 10px;
+    line-height: 1;
+    font-weight: 900;
+    text-transform: uppercase;
+    white-space: nowrap;
+    box-shadow: 0 3px 10px rgba(41, 63, 7, 0.04);
+  }
+
+  #shopify-section-{{ section.id }} .po-simple-addon-card__footer {
+    margin-top: 18px;
+  }
+
+  #shopify-section-{{ section.id }} .po-simple-addon-card__link {
+    width: 100%;
+    min-height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 16px;
+    border-radius: 999px;
+    background: transparent;
+    border: 1.5px solid rgba(41, 63, 7, 0.18);
+    color: var(--po-dark);
+    text-decoration: none;
+    font-family: var(--po-heading);
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition: 0.22s ease;
+  }
+
+  #shopify-section-{{ section.id }} .po-simple-addon-card__link:hover {
+    background: var(--po-dark);
+    border-color: var(--po-dark);
+    color: #fff;
+    text-decoration: none;
+  }
+
+  #shopify-section-{{ section.id }} .po-simple-addon-card__empty {
+    margin: 0;
+    padding: 14px;
+    border-radius: 16px;
+    background: var(--po-soft-green);
+    color: var(--po-muted);
+    font-size: 13px;
+    line-height: 1.5;
+    font-weight: 700;
+  }
+
+  @media screen and (max-width: 1180px) {
+    #shopify-section-{{ section.id }} .po-simple-addons__grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    #shopify-section-{{ section.id }} .po-simple-addon-card {
+      min-height: 320px;
+    }
+  }
+
+  @media screen and (max-width: 749px) {
+    #shopify-section-{{ section.id }} .po-simple-addons {
+      padding: 38px 14px 50px;
+    }
+
+    #shopify-section-{{ section.id }} .po-simple-addons__header {
+      grid-template-columns: 1fr;
+      align-items: start;
+      gap: 16px;
+    }
+
+    #shopify-section-{{ section.id }} .po-simple-addons__button {
+      width: 100%;
+      min-height: 44px;
+    }
+
+    #shopify-section-{{ section.id }} .po-simple-addons__grid {
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    #shopify-section-{{ section.id }} .po-simple-addon-card {
+      min-height: auto;
+      border-radius: 24px;
+    }
+
+    #shopify-section-{{ section.id }} .po-simple-addon-card__head {
+      display: block;
+      margin-bottom: 16px;
+    }
+
+    #shopify-section-{{ section.id }} .po-simple-addon-card__title {
+      max-width: 88%;
+      font-size: clamp(25px, 8vw, 34px);
+    }
+
+    #shopify-section-{{ section.id }} .po-simple-addon-card__count {
+      margin-top: 10px;
+    }
+
+    #shopify-section-{{ section.id }} .po-simple-addon-item {
+      min-height: 60px;
+      grid-template-columns: 46px minmax(0, 1fr) auto;
+    }
+
+    #shopify-section-{{ section.id }} .po-simple-addon-item__image {
+      width: 46px;
+      height: 46px;
+    }
+
+    #shopify-section-{{ section.id }} .po-simple-addon-item__title {
+      white-space: normal;
+    }
+  }
+
+  @media screen and (max-width: 390px) {
+    #shopify-section-{{ section.id }} .po-simple-addons {
+      padding-left: 12px;
+      padding-right: 12px;
+    }
+
+    #shopify-section-{{ section.id }} .po-simple-addons__title {
+      font-size: 34px;
+    }
+
+    #shopify-section-{{ section.id }} .po-simple-addon-card__inner {
+      padding: 18px;
+    }
+
+    #shopify-section-{{ section.id }} .po-simple-addon-item {
+      grid-template-columns: 44px minmax(0, 1fr);
+    }
+
+    #shopify-section-{{ section.id }} .po-simple-addon-item__image {
+      width: 44px;
+      height: 44px;
+    }
+
+    #shopify-section-{{ section.id }} .po-simple-addon-item__tag {
+      grid-column: 2;
+      justify-self: flex-start;
+      margin-top: -2px;
+    }
+  }
+</style>
+
+<section class="po-simple-addons">
+  <div class="po-simple-addons__container">
+
+    <div class="po-simple-addons__header">
+      <div>
+        {% if section.settings.title != blank %}
+          <h2 class="po-simple-addons__title">
+            {{ section.settings.title }}
+          </h2>
+        {% endif %}
+
+        {% if section.settings.subtitle != blank %}
+          <p class="po-simple-addons__subtitle">
+            {{ section.settings.subtitle }}
+          </p>
+        {% endif %}
+      </div>
+
+      {% if section.settings.button_label != blank and section.settings.button_link != blank %}
+        <a href="{{ section.settings.button_link }}" class="po-simple-addons__button">
+          {{ section.settings.button_label }}
+        </a>
+      {% endif %}
+    </div>
+
+    <div class="po-simple-addons__grid">
+      {% for block in section.blocks %}
+        {% liquid
+          assign menu_collection = block.settings.collection
+          assign card_title = block.settings.title
+
+          if card_title == blank and menu_collection != blank
+            assign card_title = menu_collection.title
+          endif
+        %}
+
+        <article class="po-simple-addon-card" {{ block.shopify_attributes }}>
+          <span class="po-simple-addon-card__shape"></span>
+
+          <div class="po-simple-addon-card__inner">
+            <div class="po-simple-addon-card__head">
+              {% if card_title != blank %}
+                <h3 class="po-simple-addon-card__title">
+                  {{ card_title }}
+                </h3>
+              {% endif %}
+
+              {% if section.settings.show_count and menu_collection != blank %}
+                <span class="po-simple-addon-card__count">
+                  {{ menu_collection.products_count }} items
+                </span>
+              {% endif %}
+            </div>
+
+            {% if menu_collection != blank and menu_collection.products_count > 0 %}
+              <div class="po-simple-addon-card__list">
+                {% for product in menu_collection.products limit: section.settings.products_per_collection %}
+                  <a href="{{ product.url }}" class="po-simple-addon-item">
+                    {% if product.featured_image != blank %}
+                      <img
+                        class="po-simple-addon-item__image"
+                        src="{{ product.featured_image | image_url: width: 120 }}"
+                        alt="{{ product.featured_image.alt | default: product.title | escape }}"
+                        loading="lazy"
+                        width="44"
+                        height="44"
+                      >
+                    {% else %}
+                      <span class="po-simple-addon-item__image" aria-hidden="true"></span>
+                    {% endif %}
+
+                    <span class="po-simple-addon-item__content">
+                      <span class="po-simple-addon-item__title">
+                        {{ product.title }}
+                      </span>
+
+                      {% if section.settings.show_price %}
+                        <span class="po-simple-addon-item__price">
+                          {{ product.price | money }}
+                        </span>
+                      {% endif %}
+                    </span>
+
+                    {% if section.settings.show_tags %}
+                      {% if product.metafields.custom.diet_tag != blank %}
+                        <span class="po-simple-addon-item__tag">
+                          {{ product.metafields.custom.diet_tag }}
+                        </span>
+                      {% elsif product.tags contains 'GF' or product.tags contains 'Gluten Free' or product.tags contains 'gluten free' %}
+                        <span class="po-simple-addon-item__tag">GF</span>
+                      {% elsif product.tags contains 'V' or product.tags contains 'Vegan' or product.tags contains 'vegan' %}
+                        <span class="po-simple-addon-item__tag">V</span>
+                      {% else %}
+                        <span class="po-simple-addon-item__tag">VG</span>
+                      {% endif %}
+                    {% endif %}
+                  </a>
+                {% endfor %}
+              </div>
+
+              {% if section.settings.show_collection_button %}
+                <div class="po-simple-addon-card__footer">
+                  <a href="{{ menu_collection.url }}" class="po-simple-addon-card__link">
+                    View {{ card_title }}
+                  </a>
+                </div>
+              {% endif %}
+            {% else %}
+              <p class="po-simple-addon-card__empty">
+                Select a collection for this card. Products will show here automatically.
+              </p>
+            {% endif %}
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+
+  </div>
+</section>
+
+{% schema %}
+{
+  "name": "PO Simple Add-ons Menu",
+  "settings": [
+    {
+      "type": "html",
+      "id": "title",
+      "label": "Title",
+      "default": "All Add-Ons"
+    },
+    {
+      "type": "textarea",
+      "id": "subtitle",
+      "label": "Subtitle",
+      "default": "Breakfast, bakery, juices, and family-style protein add-ons for extra flexibility."
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Top button label",
+      "default": "Full Add-On Menu"
+    },
+    {
+      "type": "url",
+      "id": "button_link",
+      "label": "Top button link"
+    },
+    {
+      "type": "range",
+      "id": "products_per_collection",
+      "label": "Products per selected collection",
+      "min": 4,
+      "max": 6,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Desktop columns",
+      "min": 2,
+      "max": 4,
+      "step": 1,
+      "default": 4
+    },
+    {
+      "type": "checkbox",
+      "id": "show_count",
+      "label": "Show collection item count",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_price",
+      "label": "Show product price",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tags",
+      "label": "Show diet tags",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_collection_button",
+      "label": "Show collection button inside cards",
+      "default": false
+    }
+  ],
+  "blocks": [
+    {
+      "type": "addon_collection",
+      "name": "Selected collection",
+      "settings": [
+        {
+          "type": "collection",
+          "id": "collection",
+          "label": "Select collection"
+        },
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Custom collection title"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "PO Simple Add-ons Menu",
+      "blocks": [
+        {
+          "type": "addon_collection",
+          "settings": {
+            "title": "Breakfast"
+          }
+        },
+        {
+          "type": "addon_collection",
+          "settings": {
+            "title": "Bakery"
+          }
+        },
+        {
+          "type": "addon_collection",
+          "settings": {
+            "title": "Fresh-Pressed Juices"
+          }
+        },
+        {
+          "type": "addon_collection",
+          "settings": {
+            "title": "Family-Style Protein Add-Ons"
+          }
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}

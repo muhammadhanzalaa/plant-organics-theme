@@ -1,0 +1,2347 @@
+<!doctype html>
+<html class="no-js" lang="{{ request.locale.iso_code }}" dir="{{ settings.text_direction }}">
+<head>
+
+
+
+
+
+
+
+
+<!-- Permanent Cart Hide & Instant Redirect -->
+<style>
+  /* Page load hone se pehle hi Icon aur Cart Links permanent hide */
+  a[href*="/cart"],
+  .header__icon--cart,
+  .site-header__cart,
+  #cart-icon-bubble,
+  cart-drawer,
+  .cart-drawer,
+  #CartDrawer,
+  header .cart-link {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+  }
+</style>
+
+<script>
+  // Page load hone se pehle hi redirect execution
+  if (window.location.pathname.includes('/cart')) {
+    window.location.replace('/');
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ {%- capture ecom_header_content -%}{%- render 'ecom_header' -%}{%- endcapture -%}{%- unless ecom_header_content contains 'Liquid error' -%}{{ ecom_header_content }}{%- endunless -%}
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="{{ settings.color_button }}">
+  <link rel="canonical" href="{{ canonical_url }}">
+  <link rel="preconnect" href="https://cdn.shopify.com">
+  <link rel="preconnect" href="https://fonts.shopifycdn.com">
+  <link rel="dns-prefetch" href="https://productreviews.shopifycdn.com">
+  <link rel="dns-prefetch" href="https://ajax.googleapis.com">
+  <link rel="dns-prefetch" href="https://maps.googleapis.com">
+  <link rel="dns-prefetch" href="https://maps.gstatic.com">
+
+  {%- if settings.favicon != blank -%}
+    <link rel="shortcut icon" href="{{ settings.favicon | img_url: '32x32' }}" type="image/png" />
+  {%- endif -%}
+
+  {%- render 'seo-title' -%}
+
+  {%- if page_description -%}
+  <meta name="description" content="{{ page_description | escape }}">
+  {%- endif -%}
+
+  {%- render 'social-meta-tags' -%}
+
+  {%- render 'font-face' -%}
+  {{ 'theme.css' | asset_url | stylesheet_tag }}
+  {%- render 'css-variables' -%}
+
+  <script>
+    document.documentElement.className = document.documentElement.className.replace('no-js', 'js');
+
+    window.theme = window.theme || {};
+    theme.routes = {
+      home: "{{ routes.root_url }}",
+      cart: "{{ routes.cart_url | append: '.js' }}",
+      cartPage: "{{ routes.cart_url }}",
+      cartAdd: "{{ routes.cart_add_url | append: '.js' }}",
+      cartChange: "{{ routes.cart_change_url | append: '.js' }}"
+    };
+    theme.strings = {
+      soldOut: {{ 'products.product.sold_out' | t | json }},
+      unavailable: {{ 'products.product.unavailable' | t | json }},
+      inStockLabel: {{ 'products.product.in_stock_label' | t | json }},
+      stockLabel: {{ 'products.product.stock_label' | t: count: '[count]' | json }},
+      willNotShipUntil: {{ 'products.product.will_not_ship_until' | t: date: '[date]' | json }},
+      willBeInStockAfter: {{ 'products.product.will_be_in_stock_after' | t: date: '[date]' | json }},
+      waitingForStock: {{ 'products.product.waiting_for_stock' | t | json }},
+      savePrice: {{ 'products.general.save_html' | t: saved_amount: '[saved_amount]' | json }},
+      cartEmpty: {{ 'cart.general.empty' | t | json }},
+      cartTermsConfirmation: {{ 'cart.general.terms_confirm' | t | json }},
+      searchCollections: {{ 'general.search.collections' | t | json }},
+      searchPages: {{ 'general.search.pages' | t | json }},
+      searchArticles: {{ 'general.search.articles' | t | json }}
+    };
+    theme.settings = {
+      dynamicVariantsEnable: true,
+      cartType: {{ settings.cart_type | json }},
+      isCustomerTemplate: {% if request.page_type contains 'customers/' %}true{% else %}false{% endif %},
+      moneyFormat: {{ shop.money_format | json }},
+      saveType: {{ settings.product_save_type | json }},
+      productImageSize: {{ settings.product_grid_image_size | json }},
+      productImageCover: {{ settings.product_grid_image_fill }},
+      predictiveSearch: {{ settings.predictive_search_enabled }},
+      predictiveSearchType: {{ settings.search_type | json }},
+      quickView: {{ settings.quick_shop_enable }},
+      themeName: 'Impulse',
+      themeVersion: "5.2.1"
+    };
+  </script>
+
+  {{ content_for_header }}
+
+  <script src="{{ 'vendor-scripts-v10.js' | asset_url | split: '?' | first }}" defer="defer"></script>
+
+  {%- if shop.enabled_currencies.size > 1 -%}
+    <link rel="preload" as="style" href="{{ 'currency-flags.css' | asset_url | split: '?' | first }}" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="stylesheet" href="{{ 'currency-flags.css' | asset_url | split: '?' | first }}">
+  {%- endif -%}
+
+  <script src="{{ 'theme.js' | asset_url }}" defer="defer"></script>
+
+  {%- if request.page_type contains 'customers/' -%}
+    <script src="{{ 'shopify_common.js' | shopify_asset_url }}" defer="defer"></script>
+  {%- endif -%}
+
+
+
+
+  <style>
+    #po-sms-disclaimer{
+    display:none !important;
+    }
+  </style>
+
+</head>
+
+<body class="template-{{ template | replace: '.', ' ' | truncatewords: 1, '' | handle }}{% if request.path == '/challenge' %} template-challange{% endif %}" data-center-text="{{ settings.type_body_align_text }}" data-button_style="{{ settings.button_style }}" data-type_header_capitalize="{{ settings.type_header_capitalize }}" data-type_headers_align_text="{{ settings.type_headers_align_text }}" data-type_product_capitalize="{{ settings.type_product_capitalize }}" data-swatch_style="{{ settings.swatch_style }}" {% if settings.disable_animations %}data-disable-animations="true"{% endif %}>
+
+  <a class="in-page-link visually-hidden skip-link" href="#MainContent">{{ 'general.accessibility.skip_to_content' | t }}</a>
+
+  <div id="PageContainer" class="page-container">
+    <div class="transition-body">
+
+    {%- section 'header' -%}
+
+      <main class="main-content" id="MainContent">
+        {{ content_for_layout }}
+      </main>
+
+      {%- section 'footer-promotions' -%}
+      {%- section 'footer' -%}
+
+    </div>
+  </div>
+
+  {%- section 'newsletter-popup' -%}
+
+  {%- liquid
+    render 'video-modal'
+    render 'photoswipe-template'
+  -%}
+{%- capture ecom_footer_content -%}{%- render 'ecom_footer' -%}{%- endcapture -%}{%- unless ecom_footer_content contains 'Liquid error' -%}{{ ecom_footer_content }}{%- endunless -%}
+
+
+
+
+
+
+
+<style>
+  .glow-mb-window.is-step-1 .glow-mb-col-summary {
+    display: none !important;
+  }
+</style>
+
+
+
+<div style="text-align: center; padding: 10px 0; background-color: #0b2612; color: #ffffff; font-size: 14px;">
+   Developed by <a href="mailto:hj.devzone@gmail.com" style="color: #ff7075; text-decoration: none;">Hanzala</a> — <a href="https://wa.me/923324048449" style="color: #ff7075; text-decoration: none;" target="_blank">WhatsApp</a>
+</div>
+
+<!-- Glow Builder Step 1 Privacy Notice Script -->
+<script>
+  (function() {
+    function addPrivacyNotice() {
+      const leadForm = document.querySelector('form[id*="glow-mb-lead-form"]');
+      
+      if (leadForm && !document.querySelector('.po-privacy-notice-text')) {
+        const noticeWrapper = document.createElement('div');
+        noticeWrapper.className = 'po-privacy-notice-text';
+        noticeWrapper.innerHTML = `
+          <p style="font-size: 11.5px; color: #444444; line-height: 1.45; margin-top: 15px; margin-bottom: 5px; text-align: center; width: 100%;">
+            Your information is collected securely and used only to process your order, provide services, and communicate with you. By submitting your information, you agree to our <a href="/policies/privacy-policy" target="_blank" style="color: #293f07; text-decoration: underline; font-weight: 600;">Privacy Policy</a>.
+          </p>
+        `;
+        
+        leadForm.appendChild(noticeWrapper);
+      }
+    }
+
+    const observer = new MutationObserver(addPrivacyNotice);
+    observer.observe(document.body, { childList: true, subtree: true });
+    
+    document.addEventListener("DOMContentLoaded", addPrivacyNotice);
+  })();
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- ============================================
+     PO Meal Box Builder — Complete Fix v13.0
+     (v13 changes vs v12.1):
+       1) ADDED: Native Fetch Interceptor for /cart/add.js
+          - Strips selling_plan from Add-ons automatically.
+          - Preserves main box recurring selling_plan.
+          - Fixes Shopify Checkout Engine recurring mismatch.
+       2) PRESERVED: 100% of v12.1 features byte-for-byte
+          - Dietary Preferences, Allergy guards, weight caps, 
+          - History tracking, back button guards, DOM overrides,
+          - And debounced observers remain completely untouched.
+
+     Paste in its OWN "Custom Liquid" section.
+     Only runs on: /products/*?view=shoptrigger
+     ============================================ -->
+<script>
+(function () {
+  try {
+    if (window.location.search.indexOf('view=shoptrigger') === -1) return;
+
+    // =========================================================
+    // 0. NATIVE FETCH INTERCEPTOR (v13 FIX FOR CHECKOUT ENGINE)
+    // =========================================================
+    var originalFetch = window.fetch;
+    window.fetch = function () {
+      var args = arguments;
+      var url = args[0] ? (typeof args[0] === 'string' ? args[0] : args[0].url) : '';
+
+      if (url && (url.indexOf('/cart/add.js') !== -1 || url.indexOf('/cart/add') !== -1)) {
+        if (args[1] && args[1].body) {
+          try {
+            var payload = JSON.parse(args[1].body);
+
+            if (payload.items && Array.isArray(payload.items)) {
+              payload.items.forEach(function (item) {
+                var title = (item.title || '').toLowerCase();
+                var properties = item.properties || {};
+
+                var isAddon = properties['_is_addon'] || 
+                              properties['Item Type'] === 'Add-on' || 
+                              title.indexOf('add-on') !== -1 || 
+                              title.indexOf('addon') !== -1;
+
+                if (isAddon) {
+                  delete item.selling_plan;
+                }
+              });
+              args[1].body = JSON.stringify(payload);
+            } else if (payload.id) {
+              var title = (payload.title || '').toLowerCase();
+              var properties = payload.properties || {};
+              var isAddon = properties['_is_addon'] || 
+                            properties['Item Type'] === 'Add-on' || 
+                            title.indexOf('add-on') !== -1 || 
+                            title.indexOf('addon') !== -1;
+
+              if (isAddon) {
+                delete payload.selling_plan;
+              }
+              args[1].body = JSON.stringify(payload);
+            }
+          } catch (e) {
+            console.warn('PO Meal Box: Interceptor JSON parse warning', e);
+          }
+        }
+      }
+      return originalFetch.apply(this, args);
+    };
+
+    // =========================================================
+    // 1. PRESERVED V12.1 CORE LOGIC (UNTOUCHED)
+    // =========================================================
+    var observer = null;
+    var isProcessing = false;
+    var debounceTimer = null;
+    var allergyGuardBound = false;
+    var dietaryGuardBound = false; // v12
+    var historyGuardBound = false;
+    var backButtonGuardBound = false;
+    var categoryCapGuardBound = false;
+    var lastPushedStepKey = null;
+    var isSyncingHistory = false;
+    var DELIVERY_FEE = 10;
+    var MONTHLY_DISCOUNT_RATE = 0.10;
+
+    var STORAGE_KEY = 'po_mb_last_step';
+    var restoreAttempted = false;
+    var restorePollTimer = null;
+
+    var addonPlanLabelFixed = false;
+    var asideRefsCache = { subtotalLabel: null, deliveryLabel: null, addonsLabel: null, totalLabel: null };
+
+    // ---------- generic helpers ----------
+    function findByText(root, regex) {
+      var all = root.querySelectorAll('*');
+      for (var i = 0; i < all.length; i++) {
+        var el = all[i];
+        if (el.children.length === 0 && regex.test(el.textContent.trim())) return el;
+      }
+      return null;
+    }
+
+    function getAsideLabel(aside, key, regex) {
+      var cached = asideRefsCache[key];
+      if (cached && cached.isConnected && aside.contains(cached)) return cached;
+      var found = findByText(aside, regex);
+      asideRefsCache[key] = found;
+      return found;
+    }
+
+    function parseMoney(text) {
+      if (!text) return 0;
+      var m = text.replace(/,/g, '').match(/[\d.]+/);
+      return m ? parseFloat(m[0]) : 0;
+    }
+
+    function findMoneyLeaf(row, excludeEl) {
+      if (!row) return null;
+      var all = row.querySelectorAll('*');
+      var found = null;
+      for (var i = 0; i < all.length; i++) {
+        var el = all[i];
+        if (el.children.length === 0 && el !== excludeEl && /\$\s?[\d,]+(\.\d+)?/.test(el.textContent)) {
+          found = el;
+        }
+      }
+      return found;
+    }
+
+    function findSummaryAside() {
+      return document.querySelector('.glow-mb-col-summary') ||
+             document.querySelector('aside[class*="glow-mb-summary"]') ||
+             document.querySelector('aside[id*="glow-mb-summary"]');
+    }
+
+    function findBuilderMain() {
+      return document.querySelector('.glow-mb-family-builder') ||
+             document.querySelector('.glow-mb-col-builder') ||
+             document.querySelector('main[class*="glow-mb-builder"]') ||
+             document.querySelector('[class*="builder"]');
+    }
+
+    // ---------- Subscription Frequency panel ----------
+    function buildFrequencyPanel() {
+      var panel = document.createElement('div');
+      panel.id = 'po-mb-frequency-panel';
+      panel.style.cssText =
+        'margin:0 0 16px;padding:18px;border:1px solid rgba(41,63,7,0.15);' +
+        'border-radius:16px;background:#fff;font-family:Montserrat,Arial,sans-serif;';
+
+      panel.innerHTML =
+        '<div style="font-weight:900;color:#293f07;font-size:13px;margin-bottom:10px;' +
+        'text-transform:uppercase;letter-spacing:0.06em;">Subscription Frequency</div>' +
+
+        '<label style="display:flex;align-items:center;gap:8px;margin-bottom:8px;font-size:14px;color:#293f07;cursor:pointer;">' +
+        '<input type="radio" name="po-mb-frequency" value="Weekly" checked> <span>Weekly Subscription</span>' +
+        '</label>' +
+
+        '<label style="display:flex;align-items:center;gap:8px;margin-bottom:6px;font-size:14px;color:#293f07;cursor:pointer;">' +
+        '<input type="radio" name="po-mb-frequency" value="Monthly"> ' +
+        '<span>Monthly Subscription <span style="color:#e07a1f;font-weight:800;font-size:11px;">— 10% off (Ongoing)</span></span>' +
+        '</label>' +
+
+        '<p style="margin:10px 0 0;font-size:11px;color:rgba(41,63,7,0.6);line-height:1.4;">' +
+        'Welcome offers cannot be combined with any ongoing offers.' +
+        '</p>';
+
+      return panel;
+    }
+
+    function getSelectedFrequency() {
+      var checked = document.querySelector('input[name="po-mb-frequency"]:checked');
+      return checked ? checked.value : 'Weekly';
+    }
+
+    function trySetNativeSellingPlan(freq) {
+      try {
+        document.querySelectorAll('select[name="selling_plan"], select[id*="selling-plan" i], select[id*="selling_plan" i]')
+          .forEach(function (sel) {
+            var opt = Array.prototype.filter.call(sel.options, function (o) {
+              return new RegExp(freq, 'i').test(o.textContent);
+            })[0];
+            if (opt && sel.value !== opt.value) {
+              sel.value = opt.value;
+              sel.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+          });
+
+        document.querySelectorAll('input[name*="selling_plan" i], input[data-selling-plan]')
+          .forEach(function (r) {
+            var label = r.closest('label') || r.parentElement;
+            if (label && new RegExp(freq, 'i').test(label.textContent) && !r.checked) {
+              r.checked = true;
+              r.dispatchEvent(new Event('change', { bubbles: true }));
+            }
+          });
+      } catch (e) {
+        console.warn('PO Meal Box: trySetNativeSellingPlan error', e);
+      }
+    }
+
+    function ensureFrequencyPanel(aside) {
+      if (document.getElementById('po-mb-frequency-panel')) return;
+      var panel = buildFrequencyPanel();
+      aside.insertBefore(panel, aside.firstChild);
+
+      panel.querySelectorAll('input[name="po-mb-frequency"]').forEach(function (r) {
+        r.addEventListener('change', function () {
+          trySetNativeSellingPlan(r.value);
+          computeAndSetTotal(aside);
+          syncCartAttributes();
+        });
+      });
+    }
+
+    function fixDeliveryLabel(aside) {
+      var freeEl = findByText(aside, /^free$/i);
+      if (freeEl) {
+        var row = freeEl.closest('div,li,tr,p') || freeEl.parentElement;
+        if (row && /delivery/i.test(row.textContent)) {
+          freeEl.textContent = '$' + DELIVERY_FEE.toFixed(2);
+        }
+      }
+    }
+
+    function fixFamilyAddonDescOrange(builder) {
+      if (!builder) return;
+      var descs = builder.querySelectorAll('.glow-mb-plan-desc');
+      if (!descs.length) {
+        var all = builder.querySelectorAll('*');
+        descs = [];
+        for (var i = 0; i < all.length; i++) {
+          if (all[i].children.length === 0 && /10%\s*off\s*add-ons/i.test(all[i].textContent)) {
+            descs.push(all[i]);
+          }
+        }
+      }
+      descs.forEach(function (el) {
+        if (el.querySelector && el.querySelector('.po-mb-addon-ongoing')) return;
+        if (!/10%\s*off\s*add-ons/i.test(el.innerHTML)) return;
+        if (/\(ongoing\)/i.test(el.innerHTML)) return;
+        el.innerHTML = el.innerHTML.replace(
+          /10%\s*off\s*add-ons/i,
+          '<span class="po-mb-addon-ongoing" style="color:#e07a1f;font-weight:800;">10% off add-ons (ongoing)</span>'
+        );
+      });
+    }
+
+    function fixAddonPlanLabel(root) {
+      if (addonPlanLabelFixed) return;
+      if (!root) return;
+      var all = root.querySelectorAll('*');
+      for (var i = 0; i < all.length; i++) {
+        var el = all[i];
+        if (el.children.length === 0 && /^10%\s*off\s*with\s*your\s*plan$/i.test(el.textContent.trim())) {
+          el.textContent = '10% off with your family plan';
+          addonPlanLabelFixed = true;
+          break;
+        }
+      }
+    }
+
+    function ensureDiscountRow(aside, subtotalRow) {
+      var row = document.getElementById('po-mb-discount-row');
+      if (!row) {
+        row = document.createElement('div');
+        row.id = 'po-mb-discount-row';
+        row.style.cssText = 'display:flex;justify-content:space-between;align-items:center;' +
+          'font-family:Montserrat,Arial,sans-serif;font-size:13px;color:#c0392b;font-weight:700;' +
+          'padding:6px 0;';
+        subtotalRow.parentNode.insertBefore(row, subtotalRow.nextSibling);
+      }
+      return row;
+    }
+
+    function computeDiscountAmount(subtotal, freq) {
+      var rate = 0;
+      var labels = [];
+      if (freq === 'Monthly') {
+        rate += MONTHLY_DISCOUNT_RATE;
+        labels.push('Monthly 10% (Ongoing)');
+      }
+      return { amount: subtotal * rate, label: labels.join(' + ') };
+    }
+
+    function overrideShopifyRecurringText(amount, frequency) {
+      var freqLabel = (frequency && frequency.toLowerCase().indexOf('month') !== -1) ? 'every month' : 'every week';
+      var formattedAmount = '$' + amount.toFixed(2);
+
+      var recurringEls = document.querySelectorAll('[class*="recurring"], [id*="recurring"], p, span');
+      recurringEls.forEach(function(el) {
+        if (el.children.length === 0 && el.textContent.toLowerCase().includes('recurring subtotal')) {
+          el.textContent = 'Recurring total: ' + formattedAmount + ' ' + freqLabel;
+        }
+      });
+    }
+
+    function computeAndSetTotal(aside) {
+      try {
+        var subtotalLabel = getAsideLabel(aside, 'subtotalLabel', /^subtotal$/i);
+        var deliveryLabel = getAsideLabel(aside, 'deliveryLabel', /^delivery$/i) ||
+                            getAsideLabel(aside, 'shippingLabel', /^shipping$/i);
+        var addonsLabel   = getAsideLabel(aside, 'addonsLabel', /^add-ons$/i);
+        var totalLabel    = getAsideLabel(aside, 'totalLabel', /^total\s*\/\s*week$/i) ||
+                            getAsideLabel(aside, 'totalLabel', /^total$/i);
+
+        if (!subtotalLabel || !totalLabel) return;
+
+        var subtotalRow = subtotalLabel.closest('div,li,tr,p') || subtotalLabel.parentElement;
+        var totalRow    = totalLabel.closest('div,li,tr,p') || totalLabel.parentElement;
+
+        var subtotalValueEl = findMoneyLeaf(subtotalRow, subtotalLabel);
+        var totalValueEl    = findMoneyLeaf(totalRow, totalLabel);
+
+        if (!subtotalValueEl || !totalValueEl) return;
+
+        var subtotal = parseMoney(subtotalValueEl.textContent);
+        
+        var delivery = DELIVERY_FEE;
+        if (deliveryLabel) {
+          var deliveryRow = deliveryLabel.closest('div,li,tr,p') || deliveryLabel.parentElement;
+          var deliveryValueEl = findMoneyLeaf(deliveryRow, deliveryLabel);
+          if (deliveryValueEl) delivery = parseMoney(deliveryValueEl.textContent);
+        }
+
+        var addons = 0;
+        if (addonsLabel) {
+          var addonsRow = addonsLabel.closest('div,li,tr,p') || addonsLabel.parentElement;
+          var addonsValueEl = findMoneyLeaf(addonsRow, addonsLabel);
+          if (addonsValueEl) addons = parseMoney(addonsValueEl.textContent);
+        }
+
+        var freq = getSelectedFrequency();
+        var discount = computeDiscountAmount(subtotal, freq);
+
+        var discountRow = ensureDiscountRow(aside, subtotalRow);
+        var discountText = discount.amount > 0
+          ? '<span>Discount (' + discount.label + ')</span><span>-$' + discount.amount.toFixed(2) + '</span>'
+          : '';
+        if (discount.amount > 0) {
+          discountRow.style.display = 'flex';
+          if (discountRow.innerHTML !== discountText) discountRow.innerHTML = discountText;
+        } else {
+          if (discountRow.style.display !== 'none') discountRow.style.display = 'none';
+        }
+
+        var newTotal = (subtotal - discount.amount) + addons + delivery;
+        var newText = '$' + newTotal.toFixed(2);
+        if (totalValueEl.textContent.trim() !== newText) {
+          totalValueEl.textContent = newText;
+        }
+
+        overrideShopifyRecurringText(newTotal, freq);
+
+        var note = document.getElementById('po-mb-total-note');
+        if (!note) {
+          note = document.createElement('p');
+          note.id = 'po-mb-total-note';
+          note.style.cssText = 'margin:4px 0 0;font-size:10px;color:rgba(41,63,7,0.55);font-family:Montserrat,Arial,sans-serif;';
+          totalRow.parentNode.insertBefore(note, totalRow.nextSibling);
+        }
+        var freqLabel = (freq && freq.toLowerCase().indexOf('month') !== -1) ? 'every month' : 'every week';
+        note.textContent = 'Recurring total (incl. shipping & discounts): ' + newText + ' ' + freqLabel;
+
+      } catch (e) {
+        console.warn('PO Meal Box: computeAndSetTotal error', e);
+      }
+    }
+
+    // ---------- Food Allergies panel ----------
+    function buildAllergyPanel() {
+      var panel = document.createElement('div');
+      panel.id = 'po-mb-extra-panel';
+      panel.style.cssText =
+        'margin:16px 0;padding:18px;border:1px solid rgba(41,63,7,0.15);' +
+        'border-radius:16px;background:#fff;font-family:Montserrat,Arial,sans-serif;';
+
+      panel.innerHTML =
+        '<div style="font-weight:900;color:#293f07;font-size:13px;margin-bottom:10px;' +
+        'text-transform:uppercase;letter-spacing:0.06em;">Food Allergies</div>' +
+        '<p style="margin:0 0 8px;font-size:13px;color:#293f07;font-weight:700;">Do you have any food allergies?</p>' +
+        '<label style="display:flex;align-items:flex-start;gap:8px;margin-bottom:8px;font-size:14px;color:#293f07;cursor:pointer;">' +
+        '<input type="radio" name="po-mb-has-allergies" value="No" style="margin-top:3px;"> <span>No food allergies</span>' +
+        '</label>' +
+        '<label style="display:flex;align-items:flex-start;gap:8px;margin-bottom:10px;font-size:14px;color:#293f07;cursor:pointer;">' +
+        '<input type="radio" name="po-mb-has-allergies" value="Yes" style="margin-top:3px;"> <span>Yes — please list your food allergies below:</span>' +
+        '</label>' +
+        '<div id="po-mb-allergy-detail-wrap" style="display:none;margin-bottom:14px;">' +
+        '<label style="display:block;font-size:12px;font-weight:800;color:#293f07;margin-bottom:6px;">Allergies:</label>' +
+        '<textarea id="po-mb-allergies" rows="3" placeholder="Please list your allergies..." ' +
+        'style="width:100%;padding:10px;border:1px solid rgba(41,63,7,0.2);border-radius:10px;' +
+        'font-family:inherit;font-size:13px;resize:vertical;box-sizing:border-box;"></textarea>' +
+        '</div>' +
+        '<p style="margin:0 0 12px;font-size:11px;color:rgba(41,63,7,0.75);line-height:1.5;">' +
+        '<strong>Important:</strong> Please list all food allergies, including any that may be serious or life-threatening.' +
+        '</p>' +
+        '<p style="margin:0 0 14px;font-size:11px;color:rgba(41,63,7,0.75);line-height:1.5;">' +
+        '<strong>Food Allergy Disclaimer:</strong> Our meals are prepared in a kitchen where various allergens are handled. ' +
+        'While we provide ingredient and allergen information, we cannot guarantee that any meal is free from allergens or cross-contact. ' +
+        'We do not offer customized allergy-safe meals or ingredient substitutions. If you have a serious or life-threatening food allergy, ' +
+        'please email us at feedme@plant-organics.com before placing your order.' +
+        '</p>' +
+
+        /* ---------- v12: Dietary Preference Dropdown Block ---------- */
+        '<div id="po-mb-dietary-wrap" style="padding-top:12px;border-top:1px solid rgba(41,63,7,0.15);">' +
+        '<label for="po-mb-dietary-select" style="display:block;font-weight:900;color:#c0392b;font-size:12px;' +
+        'text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px;">' +
+        'PLEASE SELECT DIETARY PREFERENCE <span style="color:#c0392b;">*</span>' +
+        '</label>' +
+        '<select id="po-mb-dietary-select" name="properties[Dietary Preference]" required style="width:100%;padding:10px;' +
+        'border:1px solid #c0392b;border-radius:8px;font-family:inherit;font-size:13px;font-weight:700;' +
+        'color:#c0392b;background:#fff;cursor:pointer;box-sizing:border-box;">' +
+        '<option value="" disabled selected>PLEASE SELECT</option>' +
+        '<option value="Vegan" style="color:#293f07;">Vegan</option>' +
+        '<option value="Vegetarian" style="color:#293f07;">Vegetarian</option>' +
+        '<option value="Meat" style="color:#293f07;">Meat</option>' +
+        '<option value="All" style="color:#293f07;">All</option>' +
+        '</select>' +
+        '</div>';
+
+      return panel;
+    }
+
+    function addSubscriptionDisclaimer() {
+      if (document.getElementById('po-mb-sub-disclaimer')) return;
+      var builder = findBuilderMain();
+      var addOnsHeading = builder && findByText(builder, /^add-ons$/i);
+      if (!addOnsHeading) return;
+
+      var box = document.createElement('p');
+      box.id = 'po-mb-sub-disclaimer';
+      box.style.cssText = 'margin:14px 0;font-size:11px;color:rgba(41,63,7,0.75);line-height:1.5;font-family:Montserrat,Arial,sans-serif;';
+      box.innerHTML =
+        'Your cart contains an automatically renewing subscription. By clicking "Pay now," you expressly and affirmatively agree ' +
+        'that you will be automatically charged the recurring amount(s) shown in your cart (plus shipping and taxes) until the ' +
+        'subscription(s) ends or you cancel. You may cancel anytime by going to your account or contacting the store at ' +
+        '<a href="mailto:feedme@plant-organics.com" style="color:#293f07;">feedme@plant-organics.com</a>. Please see the ' +
+        '<a href="/policies/subscription-policy" style="color:#293f07;text-decoration:underline;">cancellation policy</a>.';
+
+      addOnsHeading.parentNode.insertBefore(box, addOnsHeading.nextSibling);
+    }
+
+    function insertAllergyPanel(aside, panel) {
+      var orderHeading = findByText(aside, /^your order$/i);
+      if (orderHeading) {
+        aside.insertBefore(panel, orderHeading.closest('div') || orderHeading);
+      } else {
+        aside.appendChild(panel);
+      }
+    }
+
+    // ---------- allergy-required gate ----------
+    function bindAllergyGuard() {
+      if (allergyGuardBound) return;
+      allergyGuardBound = true;
+
+      document.addEventListener('click', function (e) {
+        var btn = e.target.closest('button, a');
+        if (!btn) return;
+        var txt = (btn.textContent || '').trim();
+        if (!/continue to add-ons|review\s*&\s*checkout/i.test(txt)) return;
+
+        var hasAllergiesEl = document.querySelector('input[name="po-mb-has-allergies"]:checked');
+        if (!hasAllergiesEl) {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          e.stopPropagation();
+
+          var panel = document.getElementById('po-mb-extra-panel');
+          if (panel) {
+            panel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            panel.style.outline = '2px solid #c0392b';
+            setTimeout(function () { panel.style.outline = 'none'; }, 2500);
+          }
+          window.alert('Please select Yes or No for Food Allergies before continuing.');
+        }
+      }, true);
+    }
+
+    // ---------- v12: dietary-required gate ----------
+    function bindDietaryGuard() {
+      if (dietaryGuardBound) return;
+      dietaryGuardBound = true;
+
+      document.addEventListener('click', function (e) {
+        var btn = e.target.closest('button, a');
+        if (!btn) return;
+        var txt = (btn.textContent || '').trim();
+        if (!/continue to add-ons|review\s*&\s*checkout/i.test(txt)) return;
+
+        var dietarySelect = document.getElementById('po-mb-dietary-select');
+        if (dietarySelect && (!dietarySelect.value || dietarySelect.value === '')) {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          e.stopPropagation();
+
+          dietarySelect.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          dietarySelect.style.outline = '2px solid #c0392b';
+          dietarySelect.focus();
+          setTimeout(function () { dietarySelect.style.outline = 'none'; }, 2500);
+
+          window.alert('Please select your Dietary Preference before continuing.');
+        }
+      }, true);
+    }
+
+    // ---------- Per-category weight cap enforcement ----------
+    function findQtyValueEl(stepper) {
+      var kids = stepper.children;
+      for (var i = 0; i < kids.length; i++) {
+        if (kids[i].tagName !== 'BUTTON' && /^\d+$/.test(kids[i].textContent.trim())) {
+          return kids[i];
+        }
+      }
+      return null;
+    }
+
+    function getItemWeight(itemEl) {
+      var m = itemEl.textContent.match(/([\d.]+)\s*lb/i);
+      return m ? parseFloat(m[1]) : 1;
+    }
+
+    function getSectionCap(section) {
+      var reqEl = section.querySelector('.glow-mb-family-required');
+      var text = reqEl ? reqEl.textContent :
+        ((section.querySelector('.glow-mb-family-section-title') || {}).textContent || '');
+      var m = text.match(/([\d.]+)\s*lbs?/i);
+      return m ? parseFloat(m[1]) : null;
+    }
+
+    function getSectionCurrentTotal(section) {
+      var total = 0;
+      var items = section.querySelectorAll('.glow-mb-family-item');
+      items.forEach(function (item) {
+        var stepper = item.querySelector('.glow-mb-qty-stepper');
+        if (!stepper) return;
+        var valEl = findQtyValueEl(stepper);
+        var qty = valEl ? (parseInt(valEl.textContent.trim(), 10) || 0) : 0;
+        total += qty * getItemWeight(item);
+      });
+      return total;
+    }
+
+    function bindCategoryCapGuard() {
+      if (categoryCapGuardBound) return;
+      categoryCapGuardBound = true;
+
+      document.addEventListener('click', function (e) {
+        var stepper = e.target.closest('.glow-mb-qty-stepper');
+        if (!stepper) return;
+
+        var buttons = stepper.querySelectorAll('button');
+        if (!buttons.length) return;
+        var plusBtn = buttons[buttons.length - 1];
+        if (e.target !== plusBtn && !plusBtn.contains(e.target)) return;
+
+        var section = stepper.closest('.glow-mb-family-section');
+        if (!section) return;
+
+        var cap = getSectionCap(section);
+        if (cap === null) return;
+
+        var currentTotal = getSectionCurrentTotal(section);
+        var item = stepper.closest('.glow-mb-family-item');
+        var weight = item ? getItemWeight(item) : 1;
+
+        if (currentTotal + weight > cap + 0.001) {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          e.stopPropagation();
+
+          section.style.outline = '2px solid #c0392b';
+          section.style.transition = 'outline-color 0.2s';
+          setTimeout(function () { section.style.outline = 'none'; }, 900);
+        }
+      }, true);
+    }
+
+    // ---------- Modal step history & Navigation ----------
+    function findStepsNav() {
+      return document.querySelector('nav.glow-mb-steps') ||
+             document.querySelector('nav[aria-label="Builder steps" i]');
+    }
+
+    function isModalOpen() {
+      return !!findStepsNav();
+    }
+
+    function findModalWindow() {
+      return document.querySelector('[class*="glow-mb-window"]');
+    }
+
+    function getActiveStepNumber() {
+      var win = findModalWindow();
+      if (win) {
+        var m = win.className.match(/is-step-(\d+)/);
+        if (m) return parseInt(m[1], 10);
+      }
+      var nav = findStepsNav();
+      if (nav) {
+        var activeBtn = nav.querySelector('.glow-mb-step.active, .glow-mb-step[aria-current="step"]');
+        if (activeBtn && activeBtn.id) {
+          var idMatch = activeBtn.id.match(/glow-mb-step(\d+)-/);
+          if (idMatch) return parseInt(idMatch[1], 10);
+        }
+      }
+      return null;
+    }
+
+    function findStepButton(stepNumber) {
+      var nav = findStepsNav();
+      if (!nav) return null;
+      var btns = nav.querySelectorAll('.glow-mb-step');
+      for (var i = 0; i < btns.length; i++) {
+        if (btns[i].id && new RegExp('glow-mb-step' + stepNumber + '-').test(btns[i].id)) {
+          return btns[i];
+        }
+      }
+      return null;
+    }
+
+    function goToStep(stepNumber) {
+      isSyncingHistory = true;
+      try {
+        var btn = findStepButton(stepNumber);
+        if (btn) btn.click();
+      } catch (e) {
+        console.warn('PO Meal Box: goToStep error', e);
+      } finally {
+        setTimeout(function () { isSyncingHistory = false; }, 300);
+      }
+    }
+
+    function saveStepToSession(step) {
+      try { sessionStorage.setItem(STORAGE_KEY, String(step)); } catch (e) {}
+    }
+
+    function readStepFromSession() {
+      try {
+        var v = sessionStorage.getItem(STORAGE_KEY);
+        var n = v ? parseInt(v, 10) : null;
+        return (n && n >= 1 && n <= 4) ? n : null;
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function trackStepHistory() {
+      if (isSyncingHistory) return;
+      if (!isModalOpen()) return;
+
+      var step = getActiveStepNumber();
+      if (!step) return;
+
+      if (step >= 2 && step <= 4 && step !== lastPushedStepKey) {
+        try {
+          window.history.pushState({ poMbStep: step }, '', window.location.href);
+        } catch (e) {
+          console.warn('PO Meal Box: pushState error', e);
+        }
+        lastPushedStepKey = step;
+        saveStepToSession(step);
+      } else if (step === 1) {
+        lastPushedStepKey = 1;
+        saveStepToSession(1);
+      }
+    }
+
+    function bindHistoryGuard() {
+      if (historyGuardBound) return;
+      historyGuardBound = true;
+
+      window.addEventListener('popstate', function (e) {
+        if (!isModalOpen()) return;
+
+        var targetStep = (e.state && e.state.poMbStep) ? e.state.poMbStep : 1;
+        lastPushedStepKey = targetStep;
+        goToStep(targetStep);
+      });
+    }
+
+    function isBackForwardNavigation() {
+      try {
+        var navEntries = performance.getEntriesByType && performance.getEntriesByType('navigation');
+        if (navEntries && navEntries[0] && navEntries[0].type) {
+          return navEntries[0].type === 'back_forward';
+        }
+        if (performance.navigation) {
+          return performance.navigation.type === 2;
+        }
+      } catch (e) {}
+      return false;
+    }
+
+    function tryRestoreStepAfterBackNav() {
+      if (restoreAttempted) return;
+      if (!isBackForwardNavigation()) { restoreAttempted = true; return; }
+
+      var savedStep = readStepFromSession();
+      if (!savedStep || savedStep <= 1) { restoreAttempted = true; return; }
+
+      var attempts = 0;
+      restorePollTimer = setInterval(function () {
+        attempts++;
+        if (isModalOpen()) {
+          clearInterval(restorePollTimer);
+          restoreAttempted = true;
+          lastPushedStepKey = savedStep;
+          goToStep(savedStep);
+        } else if (attempts > 40) {
+          clearInterval(restorePollTimer);
+          restoreAttempted = true;
+        }
+      }, 100);
+    }
+
+    function bindBackButtonGuard() {
+      if (backButtonGuardBound) return;
+      backButtonGuardBound = true;
+
+      document.addEventListener('click', function (e) {
+        if (!isModalOpen()) return;
+
+        var btn = e.target.closest('button, a');
+        if (!btn) return;
+        var txt = (btn.textContent || '').trim();
+        if (!/^back$/i.test(txt)) return;
+
+        var current = getActiveStepNumber();
+        if (!current || current <= 1) return;
+
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        e.stopPropagation();
+
+        goToStep(current - 1);
+      }, true);
+    }
+
+    // ---------- main init ----------
+    function initGlowMbExtras() {
+      try {
+        var aside = findSummaryAside();
+        var builder = findBuilderMain();
+        if (!aside) return;
+
+        ensureFrequencyPanel(aside);
+        fixDeliveryLabel(aside);
+        addSubscriptionDisclaimer();
+        fixFamilyAddonDescOrange(document);
+        fixAddonPlanLabel(document);
+
+        if (!document.getElementById('po-mb-extra-panel')) {
+          var panel = buildAllergyPanel();
+          insertAllergyPanel(aside, panel);
+
+          var detailWrap = document.getElementById('po-mb-allergy-detail-wrap');
+          panel.querySelectorAll('input[name="po-mb-has-allergies"]').forEach(function (el) {
+            el.addEventListener('change', function () {
+              detailWrap.style.display = (el.value === 'Yes' && el.checked) ? 'block' : 'none';
+              syncCartAttributes();
+            });
+          });
+
+          var allergiesInput = document.getElementById('po-mb-allergies');
+          if (allergiesInput) allergiesInput.addEventListener('blur', syncCartAttributes);
+
+          var dietarySelect = document.getElementById('po-mb-dietary-select');
+          if (dietarySelect) dietarySelect.addEventListener('change', syncCartAttributes);
+        }
+
+        computeAndSetTotal(aside);
+        trackStepHistory();
+        tryRestoreStepAfterBackNav();
+        syncCartAttributes();
+      } catch (e) {
+        console.warn('PO Meal Box: initGlowMbExtras error', e);
+      }
+    }
+
+    function syncCartAttributes() {
+      try {
+        var freq = getSelectedFrequency();
+        var hasAllergiesEl = document.querySelector('input[name="po-mb-has-allergies"]:checked');
+        var allergiesEl = document.getElementById('po-mb-allergies');
+        var dietarySelectEl = document.getElementById('po-mb-dietary-select');
+
+        originalFetch('/cart/update.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            attributes: {
+              'Subscription Frequency': freq,
+              'Food Allergies': hasAllergiesEl ? hasAllergiesEl.value : '',
+              'Allergies List': (hasAllergiesEl && hasAllergiesEl.value === 'Yes' && allergiesEl) ? allergiesEl.value : '',
+              'Dietary Preference': dietarySelectEl ? dietarySelectEl.value : ''
+            }
+          })
+        }).catch(function (err) {
+          console.warn('PO Meal Box: could not sync cart attributes', err);
+        });
+      } catch (e) {
+        console.warn('PO Meal Box: syncCartAttributes error', e);
+      }
+    }
+
+    // ---------- DEBOUNCED observer ----------
+    function safeInit() {
+      if (isProcessing) return;
+      isProcessing = true;
+      if (observer) observer.disconnect();
+      try {
+        initGlowMbExtras();
+      } finally {
+        isProcessing = false;
+        if (observer) {
+          observer.observe(document.body, { childList: true, subtree: true });
+        }
+      }
+    }
+
+    function scheduleInit() {
+      if (debounceTimer) clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(safeInit, 80);
+    }
+
+    function isRelevantMutationBatch(mutations) {
+      var win = findModalWindow();
+      if (!win) return true;
+      for (var i = 0; i < mutations.length; i++) {
+        if (win.contains(mutations[i].target)) return true;
+      }
+      return false;
+    }
+
+    bindAllergyGuard();
+    bindDietaryGuard(); // v12
+    bindHistoryGuard();
+    bindBackButtonGuard();
+    bindCategoryCapGuard();
+    safeInit();
+    observer = new MutationObserver(function (mutations) {
+      if (!isRelevantMutationBatch(mutations)) return;
+      scheduleInit();
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+  } catch (e) {
+    console.warn('PO Meal Box: script init error', e);
+  }
+})();
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Instant Fullscreen Menu Popup Script -->
+<style>
+  #weeklyMenuModal {
+    display: none;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    background: #ffffff !important;
+    z-index: 2147483647 !important;
+    overflow-y: auto !important;
+  }
+  #weeklyMenuModal .wm-close-btn {
+    position: fixed !important;
+    top: 20px !important;
+    right: 25px !important;
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    color: #ffffff !important;
+    cursor: pointer !important;
+    z-index: 2147483649 !important;
+    background: #1b4332 !important; /* Premium dark green theme button */
+    padding: 10px 18px !important;
+    border-radius: 30px !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25) !important;
+    border: none !important;
+    transition: transform 0.2s ease !important;
+  }
+  #weeklyMenuModal .wm-close-btn:hover {
+    transform: scale(1.05) !important;
+  }
+  #wmModalContent {
+    width: 100% !important;
+    min-height: 100vh !important;
+    padding: 20px 0 !important;
+  }
+</style>
+
+<div id="weeklyMenuModal">
+  <button type="button" class="wm-close-btn" id="closeWmModal">
+    <span>Close Menu</span>
+    <span style="font-size: 16px; font-weight: bold;">✕</span>
+  </button>
+  <div id="wmModalContent"></div>
+</div>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const modal = document.getElementById("weeklyMenuModal");
+    const closeBtn = document.getElementById("closeWmModal");
+    const contentDiv = document.getElementById("wmModalContent");
+    let cachedMenuHtml = ""; // Background pre-fetched content
+
+    // STEP 1: Pre-fetch menu content instantly in background
+    fetch("/collections/weekly-menu")
+      .then(res => res.text())
+      .then(html => {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const mainContent = doc.querySelector('main') || doc.querySelector('#MainContent') || doc.body;
+        cachedMenuHtml = mainContent.innerHTML;
+      })
+      .catch(err => console.log("Menu pre-fetch error:", err));
+
+    // STEP 2: Instant click handler
+    window.addEventListener("click", function(e) {
+      const targetBtn = e.target.closest("a, button");
+      
+      if (targetBtn && targetBtn.textContent.trim().toLowerCase() === "view menu") {
+        e.preventDefault();
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+
+        // If pre-fetched data ready, load instantly. Otherwise fetch live.
+        if (cachedMenuHtml) {
+          contentDiv.innerHTML = cachedMenuHtml;
+        } else {
+          contentDiv.innerHTML = "<div style='text-align:center; padding:100px;'>Loading menu...</div>";
+          fetch(targetBtn.getAttribute("href") || "/collections/weekly-menu")
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const doc = parser.parseFromString(html, 'text/html');
+              const mainContent = doc.querySelector('main') || doc.querySelector('#MainContent') || doc.body;
+              contentDiv.innerHTML = mainContent.innerHTML;
+            });
+        }
+
+        modal.style.display = "block";
+        document.body.appendChild(modal);
+        document.body.style.overflow = "hidden"; // Freeze background page
+
+        return false;
+      }
+    }, true);
+
+    // STEP 3: Close button handler
+    closeBtn.addEventListener("click", function() {
+      modal.style.display = "none";
+      document.body.style.overflow = "auto";
+    });
+  });
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% if request.page_type == 'product' %}
+<!-- Step 3 -> Step 4 Confirmation Warning (Final Targeted Fix) -->
+<script>
+(function () {
+  try {
+    if (window.location.search.indexOf('view=shoptrigger') === -1) return;
+
+    document.addEventListener('click', function (e) {
+      var btn = e.target.closest('button, a, div[role="button"]');
+      if (!btn) return;
+
+      var btnText = (btn.textContent || '').trim().toLowerCase();
+      var btnId = (btn.id || '').toLowerCase();
+
+      // Check 1: Ignore Get Started & Step 1/2 buttons strictly
+      if (btnText.indexOf('get started') !== -1 || btnId.indexOf('step1') !== -1 || btnId.indexOf('step2') !== -1) {
+        return;
+      }
+
+      // Check 2: Trigger ONLY on "Review & Checkout" text OR Top Nav Step 4 click
+      var isReviewCheckoutBtn = btnText === 'review & checkout' || btnText.indexOf('review & checkout') !== -1;
+      var isTopNavStep4 = btnId.indexOf('glow-mb-step4') !== -1;
+
+      if (!isReviewCheckoutBtn && !isTopNavStep4) return;
+
+      var confirmMsg = 
+        "Important Notice:\n\n" +
+        "Proceeding to Checkout will lock your order.\n" +
+        "If you navigate back or refresh the page after proceeding, your box selections will reset and you will need to start over from Step 1.\n\n" +
+        "Do you wish to continue to Checkout?";
+
+      var userConfirmed = window.confirm(confirmMsg);
+
+      if (!userConfirmed) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        e.stopPropagation();
+      }
+    }, true);
+
+  } catch (e) {}
+})();
+</script>
+{% endif %}
+
+
+
+
+
+
+
+
+
+
+
+
+{% if request.page_type == 'cart' %}
+<!-- Universal Cart Properties Cleaner -->
+<script>
+(function () {
+  function formatCartProperties() {
+    // Cart page ke sabhi text elements ko scan karein
+    var elements = document.querySelectorAll('form[action*="/cart"] *, .cart_item *, main *');
+
+    elements.forEach(function (el) {
+      if (el.dataset.cleaned === "true") return;
+
+      var text = (el.textContent || '').trim();
+
+      // Check karein agar target label aur comma (,) majood hai
+      if (/(Selected Proteins|Selected Sides|Selected Salads|Add-ons|Starter Meal Breakdown):/i.test(text) && text.indexOf(',') !== -1) {
+        
+        // Deepest child element check
+        var hasChildMatch = Array.from(el.children).some(function(child) {
+          return /(Selected Proteins|Selected Sides|Selected Salads|Add-ons|Starter Meal Breakdown):/i.test(child.textContent);
+        });
+        if (hasChildMatch) return;
+
+        var parts = text.split(':');
+        var key = parts[0].trim();
+        var valString = parts.slice(1).join(':').trim();
+
+        if (valString && valString.indexOf(',') !== -1) {
+          var items = valString.split(',');
+          var newHtml = '<strong style="color: #293f07; display: block; margin-top: 6px;">' + key + ':</strong>';
+          
+          items.forEach(function (item) {
+            var cleanItem = item.trim();
+            if (cleanItem) {
+              newHtml += '<div style="padding-left: 14px; margin-top: 3px; font-size: 13px; color: #333;">• ' + cleanItem + '</div>';
+            }
+          });
+
+          el.innerHTML = newHtml;
+          el.dataset.cleaned = "true";
+        }
+      }
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', formatCartProperties);
+  } else {
+    formatCartProperties();
+  }
+
+  setInterval(formatCartProperties, 800); // Dynamic / AJAX cart handling
+})();
+</script>
+{% endif %}
+
+
+
+
+
+
+
+
+
+
+
+<!-- Fixed Position: Step 3 Notice Above Categories -->
+<script>
+(function() {
+  // 1. Cart Interceptor (Add-ons ko recurring se hatane ke liye)
+  const originalFetch = window.fetch;
+  window.fetch = async function() {
+    let response = await originalFetch.apply(this, arguments);
+    let url = arguments[0] ? arguments[0].toString() : '';
+
+    if (url.includes('/cart/add.js') || url.includes('/cart/add')) {
+      setTimeout(fixCartSellingPlans, 500);
+    }
+    return response;
+  };
+
+  function fixCartSellingPlans() {
+    fetch('/cart.js')
+      .then(res => res.json())
+      .then(cart => {
+        let updates = {};
+        let needsUpdate = false;
+
+        cart.items.forEach((item) => {
+          const isAddon = item.properties && (item.properties['_is_addon'] || item.product_type !== 'Meal Plan');
+          if (isAddon && item.selling_plan_allocation) {
+            updates[item.key] = {
+              quantity: item.quantity,
+              selling_plan: '' 
+            };
+            needsUpdate = true;
+          }
+        });
+
+        if (needsUpdate) {
+          fetch('/cart/update.js', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ updates: updates })
+          });
+        }
+      });
+  }
+
+  // 2. Targeted Step Notices
+  function injectNotices() {
+    // Step 3 Notice - Main Header ke bilkul baad (Category se pehle)
+    var step3Header = document.querySelector('.glow-mb-builder-header');
+    if (step3Header && !document.getElementById('addon-step3-note')) {
+      var n3 = document.createElement('div');
+      n3.id = 'addon-step3-note';
+      n3.style.cssText = 'background: #fff3cd; color: #856404; padding: 10px 14px; border-radius: 6px; font-size: 13px; margin: 15px 0 10px 0; border: 1px solid #ffeeba; width: 100%; box-sizing: border-box; grid-column: 1 / -1;';
+      n3.innerHTML = '<strong>Note:</strong> Add-ons are one-time purchases and will not automatically renew with your subscription.';
+      
+      step3Header.parentNode.insertBefore(n3, step3Header.nextSibling);
+    }
+
+    // Step 1 Orange Notice
+    var isStep1Active = document.querySelector('button[id*="glow-mb-step1"].glow-mb-step-active, button[id*="step-1"].glow-mb-step-active');
+    var mainContainer = document.querySelector('.glow-mb-body');
+    
+    if (isStep1Active && mainContainer && !document.getElementById('glow-orange-notice')) {
+      var n1 = document.createElement('p');
+      n1.id = 'glow-orange-notice';
+      n1.style.cssText = 'color: #ff6b00; font-weight: bold; font-size: 14px; text-align: center; margin-top: 15px; width: 100%; grid-column: 1 / -1;';
+      n1.innerText = 'Currently, our system will only allow 1 subscription delivery per profile.';
+      
+      mainContainer.appendChild(n1);
+    }
+  }
+
+  var observer = new MutationObserver(injectNotices);
+  observer.observe(document.body, { childList: true, subtree: true });
+
+  document.addEventListener('DOMContentLoaded', injectNotices);
+  document.addEventListener('click', function() {
+    setTimeout(injectNotices, 300);
+  });
+})();
+</script>
+
+
+
+
+<!--                      YE JAGA ADDS_ON KO Recurring ma include nh krny daiti                      -->
+<!-- Complete Meals System Theme Fix & Notice -->
+<script>
+(function() {
+  // 1. STEP 1 ORANGE NOTICE RENDERER
+  function renderOrangeNotice() {
+    var step1Container = document.querySelector('#glow-mb-step-content-1, .glow-mb-body, #glow-mb-step1');
+    if (!step1Container) return;
+
+    var wrongYellowNote = step1Container.querySelector('#addon-step3-note, #addon-recurring-note');
+    if (wrongYellowNote) wrongYellowNote.remove();
+
+    if (!document.getElementById('glow-orange-notice')) {
+      var notice = document.createElement('div');
+      notice.id = 'glow-orange-notice';
+      notice.style.cssText = `
+        color: #d97706;
+        background-color: #fff8f0;
+        border: 1px solid #fed7aa;
+        font-weight: 500;
+        font-size: 12px;
+        line-height: 1.5;
+        text-align: center;
+        margin: 20px auto 15px auto;
+        padding: 10px 16px;
+        width: 90%;
+        max-width: 540px;
+        border-radius: 6px;
+        box-sizing: border-box;
+      `;
+      notice.innerText = 'One delivery subscription per profile. Your meal plan automatically renews based on your dietary preferences unless canceled by Thursday at 10 AM. Add-ons are not included in automatic renewals.';
+      
+      step1Container.appendChild(notice);
+    }
+  }
+
+  // 2. SAFE FETCH INTERCEPTOR (Does not break Theme Checkout)
+  const originalFetch = window.fetch;
+  window.fetch = async function() {
+    let response = await originalFetch.apply(this, arguments);
+    let url = arguments[0] ? arguments[0].toString() : '';
+
+    if (url.includes('/cart/add') || url.includes('/cart/update') || url.includes('/cart/change')) {
+      setTimeout(checkAndCleanCart, 300);
+    }
+    return response;
+  };
+
+  async function checkAndCleanCart() {
+    try {
+      const res = await originalFetch('/cart.js');
+      const cart = await res.json();
+      let updates = {};
+      let needsUpdate = false;
+
+      cart.items.forEach(item => {
+        // Checking if item is explicitly an addon line item
+        if (item.properties && item.properties['_is_addon'] && item.selling_plan_allocation) {
+          updates[item.key] = { quantity: item.quantity, selling_plan: '' };
+          needsUpdate = true;
+        }
+      });
+
+      if (needsUpdate) {
+        await originalFetch('/cart/update.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ updates })
+        });
+      }
+    } catch(e) {}
+  }
+
+  // Pure UI Event Listeners
+  document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(renderOrangeNotice, 500);
+  });
+
+  document.addEventListener('click', function() {
+    setTimeout(renderOrangeNotice, 300);
+  });
+})();
+</script>
+
+
+
+
+
+
+
+
+
+
+<!-- Instant Cart Reset on Builder Start + Bullet Formatter -->
+<script>
+(function () {
+  // 1. STEP 1 / BUILDER PAGE OPEN HOTAY HI CART RESET
+  if (window.location.search.indexOf('view=shoptrigger') !== -1) {
+    // Session check taakay refresh karne par bar bar clear na ho
+    if (!sessionStorage.getItem('builder_started')) {
+      fetch('/cart/clear.js', { 
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      }).then(function() {
+        sessionStorage.setItem('builder_started', 'true');
+      });
+    }
+  } else {
+    sessionStorage.removeItem('builder_started');
+  }
+
+  // "Get Started" ya Step 1 button click par instant cart clear
+  document.addEventListener('click', function (e) {
+    var btn = e.target.closest('button, a, div[role="button"]');
+    if (!btn) return;
+    var text = (btn.textContent || '').toLowerCase().trim();
+    var id = (btn.id || '').toLowerCase();
+
+    if (text.indexOf('get started') !== -1 || id.indexOf('step1') !== -1) {
+      fetch('/cart/clear.js', { method: 'POST' });
+    }
+  });
+
+  // 2. CART BULLET FORMATTER (Sirf /cart page par)
+  if (window.location.pathname.indexOf('/cart') !== -1) {
+    function formatCartProperties() {
+      var elements = document.querySelectorAll('form[action*="/cart"] *, .cart_item *, main *');
+
+      elements.forEach(function (el) {
+        if (el.dataset.cleaned === "true") return;
+        var text = (el.textContent || '').trim();
+
+        if (/(Selected Proteins|Selected Sides|Selected Salads|Add-ons|Starter Meal Breakdown):/i.test(text) && text.indexOf(',') !== -1) {
+          var hasChildMatch = Array.from(el.children).some(function(child) {
+            return /(Selected Proteins|Selected Sides|Selected Salads|Add-ons|Starter Meal Breakdown):/i.test(child.textContent);
+          });
+          if (hasChildMatch) return;
+
+          var parts = text.split(':');
+          var key = parts[0].trim();
+          var valString = parts.slice(1).join(':').trim();
+
+          if (valString && valString.indexOf(',') !== -1) {
+            var items = valString.split(',');
+            var newHtml = '<strong style="color: #293f07; display: block; margin-top: 6px;">' + key + ':</strong>';
+            
+            items.forEach(function (item) {
+              var cleanItem = item.trim();
+              if (cleanItem) {
+                newHtml += '<div style="padding-left: 14px; margin-top: 3px; font-size: 13px; color: #333;">• ' + cleanItem + '</div>';
+              }
+            });
+
+            el.innerHTML = newHtml;
+            el.dataset.cleaned = "true";
+          }
+        }
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', formatCartProperties);
+    } else {
+      formatCartProperties();
+    }
+    setInterval(formatCartProperties, 800);
+  }
+})();
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<style>
+  .po-footer-smart__submit,
+  .po-footer-smart__zip-button {
+    background: #ff960e;
+    color: #293f07;
+  }
+  .po-footer-smart__submit:hover {
+    transform: translateY(-1px);
+    background: #95ad4f;
+    box-shadow: 0 18px 34px rgba(0, 0, 0, 0.2);
+  }
+  .po-footer-smart__socials {
+    display: none;
+  }
+  .po-footer-smart__logo-mark {
+    width: 250px !important;
+    height: 110px !important;
+    flex: 0 0 250px !important;
+  }
+  .po-footer-smart__zip-button {
+    border-radius: 999px;
+    padding: 0 18px;
+  }
+  .po-footer-smart__contact-row svg {
+    width: 20px;
+    height: 20px;
+  }
+  .po-footer-smart__contact-row a {
+    font-size: 14px;
+  }
+  .po-footer-smart__contact-label {
+    display: block !important;
+    color: #ff960e !important;
+    font-size: 12px !important;
+    font-weight: 800 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.06em !important;
+    margin-bottom: 6px !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+  }
+</style>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Glow Builder Auto-Reset & Smart Continue Shopping Script 
+<script>
+(function () {
+  // 1. STEP 1 PAR AATE HI YA "GET STARTED" CLICK PAR CART AUTOMATIC CLEAR
+  function resetCartOnStep1() {
+    if (window.location.search.indexOf('view=shoptrigger') !== -1) {
+      if (!sessionStorage.getItem('glow_builder_cleared')) {
+        fetch('/cart/clear.js', { 
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        }).then(function() {
+          sessionStorage.setItem('glow_builder_cleared', 'true');
+          console.log('Cart cleared for new Glow Builder session.');
+        });
+      }
+    } else {
+      sessionStorage.removeItem('glow_builder_cleared');
+    }
+  }
+
+  // Event listener for Glow App buttons
+  document.addEventListener('click', function (e) {
+    var target = e.target.closest('button, a, div[role="button"]');
+    if (!target) return;
+
+    var text = (target.textContent || '').toLowerCase().trim();
+    var id = (target.id || '').toLowerCase();
+
+    // Catch Glow Step 1 or "Get Started"
+    if (text.indexOf('get started') !== -1 || id.indexOf('glow-mb-step1') !== -1) {
+      fetch('/cart/clear.js', { method: 'POST' });
+    }
+  });
+
+  resetCartOnStep1();
+
+  // 2. CONTINUE SHOPPING LINK FIX (Directs to Builder & Hides if Cart has Items)
+  if (window.location.pathname.indexOf('/cart') !== -1) {
+    var step1Url = 'https://qrfyq0-g2.myshopify.com/products/balanced-family-style-box?view=shoptrigger';
+
+    fetch('/cart.js')
+      .then(function (res) { return res.json(); })
+      .then(function (cart) {
+        var links = document.querySelectorAll('a');
+        links.forEach(function (link) {
+          if ((link.textContent || '').toLowerCase().indexOf('continue shopping') !== -1) {
+            // Set link to Step 1 / Builder page URL
+            link.setAttribute('href', step1Url);
+
+            // Hide "Continue Shopping" button completely if cart is NOT empty
+            if (cart.item_count > 0) {
+              link.style.display = 'none';
+            }
+          }
+        });
+      });
+  }
+})();
+</script>
+
+
+
+
+
+
+
+
+-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Instant Cart & Drawer Blocker 
+<style>
+  /* Hide Cart Icons, Buttons, and Drawer Popups completely */
+  .header__icon--cart,
+  .site-header__cart,
+  [href="/cart"],
+  .cart-link,
+  #cart-icon-bubble,
+  cart-drawer,
+  .cart-drawer,
+  #CartDrawer {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+    pointer-events: none !important;
+  }
+</style>
+
+<script>
+  (function() {
+    // 1. Instant Redirect if URL contains /cart
+    if (window.location.pathname.includes('/cart')) {
+      window.location.replace('/');
+    }
+
+    // 2. Block Cart Clicks Instantly (Prevents Slide-out Drawer)
+    document.addEventListener('click', function(e) {
+      var target = e.target.closest('a[href*="/cart"], .header__icon--cart, [data-cart-drawer]');
+      if (target) {
+        e.preventDefault();
+        e.stopPropagation();
+        window.location.href = '/';
+      }
+    }, true);
+  })();
+</script>
+
+
+
+-->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- ============================================
+     Subscription / One-Time Add-on Splitter v4
+     (Fixes Double Charging & Cleans Main Box Props)
+     ============================================
+<script>
+(function () {
+  try {
+    var originalFetch = window.fetch.bind(window);
+
+    var ADDON_CATALOG = {
+      // Bakery — $8.00 each
+      "banana bread":             { id: 48852142686459, price: 8.00,  isJuice: false },
+      "energy bites":              { id: 49089705115899, price: 8.00,  isJuice: false },
+      "protein muffins":          { id: 49089702035707, price: 8.00,  isJuice: false },
+      "seasonal bakery item":     { id: 49089706688763, price: 8.00,  isJuice: false },
+
+      // Breakfast — $9.00 each
+      "chia pudding":              { id: 49089692532987, price: 9.00,  isJuice: false },
+      "egg bites":                 { id: 49089694761211, price: 9.00,  isJuice: false },
+      "greek yogurt parfait":      { id: 49089698955515, price: 9.00,  isJuice: false },
+      "overnight oats":            { id: 49089692139771, price: 9.00,  isJuice: false },
+
+      // Fresh-Pressed Juice — $9.00 each, 3 for $24.00 bundle
+      "beet boost":                { id: 49089738539259, price: 9.00,  isJuice: true },
+      "citrus immunity":           { id: 49089716977915, price: 9.00,  isJuice: true },
+      "green glow":                { id: 49089713996027, price: 9.00,  isJuice: true },
+      "tropical greens":           { id: 49089747026171, price: 9.00,  isJuice: true },
+
+      // Extra Protein — $20.00 each
+      "turkey burgers":            { id: 49089659797755, price: 20.00, isJuice: false },
+      "grass-fed bison patties":  { id: 49089661468923, price: 20.00, isJuice: false },
+      "lemon herb tofu":          { id: 49089664647419, price: 20.00, isJuice: false },
+      "spinach & feta veggie cakes": { id: 49089665433851, price: 20.00, isJuice: false }
+    };
+
+    var JUICE_BUNDLE_QTY = 3;
+    var JUICE_BUNDLE_PRICE = 24.00;
+
+    function toCents(n) { return Math.round(n * 100); }
+    function fromCents(c) { return (c / 100).toFixed(2); }
+
+    function normalizeName(name) {
+      return name.trim().toLowerCase().replace(/\s+/g, ' ');
+    }
+
+    function parseAddonsText(text) {
+      if (!text || typeof text !== 'string') return [];
+      return text.split(',').map(function (chunk) {
+        var m = chunk.trim().match(/^(\d+)\s*x\s*(.+)$/i);
+        if (!m) return null;
+        return { name: normalizeName(m[2]), qty: parseInt(m[1], 10) };
+      }).filter(Boolean);
+    }
+
+    function buildAddonLines(entry, catalogEntry) {
+      var lines = [];
+
+      if (catalogEntry.isJuice) {
+        var bundles = Math.floor(entry.qty / JUICE_BUNDLE_QTY);
+        var remainder = entry.qty % JUICE_BUNDLE_QTY;
+
+        if (bundles > 0) {
+          lines.push({
+            id: catalogEntry.id,
+            quantity: bundles * JUICE_BUNDLE_QTY,
+            properties: {
+              "Note": "One-time add-on (3-pack bundle)"
+            }
+          });
+        }
+        if (remainder > 0) {
+          lines.push({
+            id: catalogEntry.id,
+            quantity: remainder,
+            properties: {
+              "Note": "One-time add-on"
+            }
+          });
+        }
+      } else {
+        lines.push({
+          id: catalogEntry.id,
+          quantity: entry.qty,
+          properties: {
+            "Note": "One-time add-on"
+          }
+        });
+      }
+
+      return lines;
+    }
+
+    function resolveAddons(parsedList) {
+      var addonLineItems = [];
+      var addonTotalCents = 0;
+
+      parsedList.forEach(function (entry) {
+        var catalogEntry = ADDON_CATALOG[entry.name];
+        if (!catalogEntry) return;
+
+        var unitCents = toCents(catalogEntry.price);
+        var costCents = catalogEntry.isJuice
+          ? (Math.floor(entry.qty / JUICE_BUNDLE_QTY) * toCents(JUICE_BUNDLE_PRICE) +
+             (entry.qty % JUICE_BUNDLE_QTY) * unitCents)
+          : unitCents * entry.qty;
+
+        addonTotalCents += costCents;
+
+        buildAddonLines(entry, catalogEntry).forEach(function (line) {
+          addonLineItems.push(line);
+        });
+      });
+
+      return { addonLineItems: addonLineItems, addonTotalCents: addonTotalCents };
+    }
+
+    function isCartAddRequest(url) {
+      return typeof url === 'string' && /\/cart\/add(\.js)?(\?|$)/.test(url);
+    }
+
+    async function buildModifiedBody(originalBodyText) {
+      var body;
+      try {
+        body = JSON.parse(originalBodyText);
+      } catch (e) {
+        return null;
+      }
+
+      if (!body || !Array.isArray(body.items) || body.items.length === 0) return null;
+
+      var newItems = [];
+      var didModify = false;
+
+      body.items.forEach(function (item) {
+        var props = item.properties || {};
+        var addonsText = props["Add-ons"];
+        var hasSellingPlan = !!item.selling_plan;
+
+        if (!addonsText || !hasSellingPlan) {
+          newItems.push(item);
+          return;
+        }
+
+        var parsed = parseAddonsText(addonsText);
+        if (parsed.length === 0) {
+          newItems.push(item);
+          return;
+        }
+
+        var resolved = resolveAddons(parsed);
+
+        if (resolved.addonTotalCents <= 0) {
+          newItems.push(item);
+          return;
+        }
+
+        var newItem = JSON.parse(JSON.stringify(item));
+        var newProps = newItem.properties;
+
+        // 1. Remove Add-ons property from main box to prevent text listing in meal box
+        delete newProps["Add-ons"];
+
+        // 2. Adjust prices to base price by removing add-on cost
+        var originalPriceCents = toCents(parseFloat(newProps["_price"] || "0"));
+        if (originalPriceCents > 0) {
+          var mealOnlyCents = Math.max(originalPriceCents - resolved.addonTotalCents, 0);
+          newProps["_price"] = fromCents(mealOnlyCents);
+          if (newProps["Weekly Price"]) {
+            newProps["Weekly Price"] = "$" + fromCents(mealOnlyCents);
+          }
+        }
+
+        // Push clean main box item (Subscription)
+        newItems.push(newItem);
+
+        // Push separated add-ons (One-Time)
+        resolved.addonLineItems.forEach(function (li) { 
+          newItems.push(li); 
+        });
+
+        didModify = true;
+      });
+
+      if (!didModify) return null;
+
+      body.items = newItems;
+      return JSON.stringify(body);
+    }
+
+    window.fetch = function (input, init) {
+      try {
+        var url = typeof input === 'string' ? input : (input && input.url);
+        var method = (init && init.method) || (input && input.method) || 'GET';
+
+        if (isCartAddRequest(url) && /post/i.test(method) && init && typeof init.body === 'string') {
+          return buildModifiedBody(init.body).then(function (newBodyText) {
+            if (!newBodyText) {
+              return originalFetch(input, init);
+            }
+            var newInit = Object.assign({}, init, { body: newBodyText });
+            console.log('PO Meal Box Intercepted:', JSON.parse(newBodyText));
+            return originalFetch(input, newInit);
+          }).catch(function (e) {
+            return originalFetch(input, init);
+          });
+        }
+      } catch (e) {
+        console.warn('PO Meal Box Error:', e);
+      }
+
+      return originalFetch(input, init);
+    };
+  } catch (e) {
+    console.warn('PO Meal Box Init Error:', e);
+  }
+})();
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Final Sync & Delay Interceptor Script 
+<script>
+(function() {
+  const CUSTOM_ADDONS_URL = "/pages/add-ons-1";
+
+  function goToCustomAddonsPage() {
+    window.location.href = CUSTOM_ADDONS_URL;
+  }
+
+  // App ka Cart AJAX call complete hone par hi redirect karein
+  const originalFetch = window.fetch;
+  window.fetch = async function() {
+    const response = await originalFetch.apply(this, arguments);
+    const url = arguments[0];
+
+    if (typeof url === 'string' && (url.includes('/cart/add') || url.includes('/cart/update'))) {
+      if (response.ok && window.userClickedAddonsBtn) {
+        setTimeout(goToCustomAddonsPage, 400); // Wait for cart session write
+      }
+    }
+    return response;
+  };
+
+  document.addEventListener("click", function(event) {
+    const btn = event.target.closest("button, a, div[role='button'], input[type='submit']");
+    if (btn) {
+      const btnText = (btn.innerText || btn.textContent || "").toLowerCase();
+      if (btnText.includes("continue to add-ons") || btnText.includes("add-ons")) {
+        window.userClickedAddonsBtn = true;
+        
+        // Backup timeout: Agar App AJAX event capture na kare
+        setTimeout(function() {
+          goToCustomAddonsPage();
+        }, 1500);
+      }
+    }
+  }, true);
+})();
+</script>
+
+
+
+
+
+
+
+
+
+<script>
+(function() {
+  document.addEventListener("click", function(event) {
+    const btn = event.target.closest("button, a, div[role='button'], input[type='submit']");
+    if (btn) {
+      const btnText = (btn.innerText || btn.textContent || "").toLowerCase();
+      if (btnText.includes("continue") || btnText.includes("add-ons") || btnText.includes("add to cart")) {
+        
+        // Page par visible price ko scan aur extract karein
+        const priceElements = document.querySelectorAll('.total-price, .subtotal, .bundle-total, [data-total-price], .price');
+        priceElements.forEach(el => {
+          const match = el.innerText.match(/\$?(\d+(\.\d+)?)/);
+          if (match && parseFloat(match[1]) > 0) {
+            localStorage.setItem('meal_box_subtotal', match[1]);
+          }
+        });
+
+        setTimeout(function() {
+          window.location.href = "/pages/add-ons-1";
+        }, 300);
+      }
+    }
+  }, true);
+})();
+</script>
+
+
+
+
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  document.addEventListener("click", function(e) {
+    const btn = e.target.closest("button, a, input[type='submit']");
+    if (!btn) return;
+    
+    const btnText = (btn.innerText || btn.value || "").toLowerCase();
+    
+    if (btnText.includes("add-ons") || btnText.includes("continue") || btnText.includes("next")) {
+      // Step 2 ke selected Variant ID ko pakadne ki koshish
+      const variantInput = document.querySelector('input[name="id"], select[name="id"], [data-variant-id]');
+      const variantId = variantInput ? (variantInput.value || variantInput.dataset.variantId) : null;
+
+      if (variantId) {
+        e.preventDefault();
+        btn.innerText = "Adding Meal Box...";
+        
+        fetch('/cart/add.js', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ items: [{ id: variantId, quantity: 1 }] })
+        })
+        .then(() => { window.location.href = "/pages/add-ons-1"; })
+        .catch(() => { window.location.href = "/pages/add-ons-1"; });
+      }
+    }
+  });
+});
+</script>
+
+
+
+
+
+
+
+-->
+
+
+
+
+
+
+
+</body>
+</html>

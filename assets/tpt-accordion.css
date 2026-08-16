@@ -1,0 +1,155 @@
+tpt-accordion,
+tpt-accordion tpt-accordion-item {
+	display: block;
+}
+
+tpt-accordion tpt-accordion-data {
+	display: none;
+}
+
+tpt-accordion tpt-accordion-item tpt-accordion-heading {
+	display: block;
+	cursor: pointer;
+}
+
+tpt-accordion tpt-accordion-item.active tpt-accordion-data {
+	display: block;
+}
+
+/**
+ * Style default
+ * <tpt-accordion class="tpt-accordion_default">
+ * </tpt-accordion>
+ */
+
+.tpt-accordion_default tpt-accordion-item {
+	border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+}
+
+.tpt-accordion_default tpt-accordion-item tpt-accordion-heading {
+	padding: 2rem 1.5rem;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	font-weight: 400;
+}
+
+.tpt-accordion_default tpt-accordion-item tpt-accordion-heading .tpt-accordion_caret {
+	line-height: 0;
+	display: block;
+	transition: 0.2s;
+}
+
+.tpt-accordion_default tpt-accordion-item.active tpt-accordion-heading .tpt-accordion_caret {
+	transform: rotate(45deg);
+}
+
+.tpt-accordion_default tpt-accordion-data {
+	padding: 0 1.5rem 1.5rem;
+}
+
+.tpt-accordion_default tpt-accordion-data > *:first-child {
+	margin-top: 0;
+}
+
+/**
+ * Style border
+ * <tpt-accordion class="tpt-accordion_border">
+ * </tpt-accordion>
+ */
+
+.tpt-accordion_border.tpt-grid {
+	row-gap: 1rem;
+}
+
+.tpt-accordion_border tpt-accordion-item {
+	border: 1px solid rgba(0, 0, 0, 0.3);
+	border-radius: var(--item-border-radius, 0);
+}
+
+.tpt-accordion_border.tpt-accordion_hidden-border tpt-accordion-item {
+	border: none;
+}
+
+.tpt-accordion_border tpt-accordion-item tpt-accordion-heading {
+	padding: 2rem 1.5rem;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	font-weight: 400;
+}
+
+.tpt-accordion_border tpt-accordion-item tpt-accordion-heading .tpt-accordion_caret {
+	line-height: 0;
+	display: block;
+	transition: 0.2s;
+}
+
+.tpt-accordion_border tpt-accordion-item.active tpt-accordion-heading .tpt-accordion_caret {
+	transform: rotate(-90deg);
+}
+
+.tpt-accordion_border tpt-accordion-data {
+	padding: 0 1.5rem 1.5rem;
+}
+
+.tpt-accordion_border tpt-accordion-data > *:first-child {
+	margin-top: 0;
+}
+
+/**
+ * Style border
+ * <tpt-accordion class="tpt-accordion_background">
+ * </tpt-accordion>
+ */
+
+.tpt-accordion_background.tpt-grid {
+	row-gap: 1rem;
+}
+
+.tpt-accordion_background tpt-accordion-item {
+	border-radius: var(--item-border-radius, 0);
+}
+
+.tpt-accordion_background.tpt-accordion_hidden-border tpt-accordion-item {
+	border: none;
+}
+
+.tpt-accordion_background tpt-accordion-item tpt-accordion-heading {
+	padding: 2rem 1.5rem;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	font-weight: 400;
+}
+
+.tpt-accordion_background tpt-accordion-item tpt-accordion-heading .tpt-accordion_caret {
+	line-height: 0;
+	display: flex;
+	min-width: 3rem;
+	width: 3rem;
+	height: 3rem;
+	justify-content: center;
+	align-items: center;
+	transition: 0.2s;
+}
+
+.tpt-accordion_background tpt-accordion-item tpt-accordion-heading .tpt-accordion_caret svg:last-child {
+	display: none;
+}
+
+.tpt-accordion_background tpt-accordion-item.active tpt-accordion-heading .tpt-accordion_caret svg:first-child {
+	display: none;
+}
+
+.tpt-accordion_background tpt-accordion-item.active tpt-accordion-heading .tpt-accordion_caret svg:last-child {
+	display: unset;
+}
+
+.tpt-accordion_background tpt-accordion-data {
+	padding: 0 1.5rem 1.5rem;
+}
+
+.tpt-accordion_background tpt-accordion-data > *:first-child {
+	margin-top: 0;
+}

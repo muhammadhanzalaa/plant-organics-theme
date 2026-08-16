@@ -1,0 +1,395 @@
+{% comment %} Section layout style {% endcomment %}
+{{ 'tpt-section.css' | asset_url | stylesheet_tag }}
+
+{% comment %} Section configuration {% endcomment %}
+{%- render 'tpt-section-setting', section: section -%}
+
+{%- if section.index and section.settings.section_lazyload -%}
+  <script src="{{ 'tpt-section-lazyload.js' | asset_url }}" defer="defer"></script>
+
+  <tpt-section-lazyload data-url="?section_id={{ section.id }}">
+    <div data-lazyload-element></div>
+    <span class="tpt-section_loader"></span>
+  </tpt-section-lazyload>
+{%- else -%}
+
+  {% comment %} Current section style {% endcomment %}
+  {{ 'tpt-swiper.min.css' | asset_url | stylesheet_tag }}
+  {{ 'tpt-slider-control.css' | asset_url | stylesheet_tag }}
+  {{ 'tpt-image-slider.css' | asset_url | stylesheet_tag }}
+
+  <script src="{{ 'tpt-swiper.min.js' | asset_url }}" defer="defer"></script>
+
+
+  {%- capture slider_options -%}
+    {
+      "slidesPerView": 3,
+      {%- if section.settings.loop -%}
+        "loop": true,
+        {%- endif -%}
+  
+        {%- if section.settings.auto_play -%}
+        "autoplay": {
+          "delay": 2500,
+          "disableOnInteraction": false
+        },
+        {%- endif -%}
+  
+        "pagination": {
+          "type": "bullets"
+        },
+  
+        {% if section.settings.scroll_bar %}
+          "scrollbar": {
+            "el": ".swiper-scrollbar",
+            "hide": false,
+            "draggable": true
+          },
+        {% endif %}
+        
+        "breakpoints": {
+          "0": {
+            "slidesPerView": 1,
+            {% comment %} "slidesPerGroup": "1", {% endcomment %}
+            "spaceBetween": 10
+          },
+          "768": {
+            "slidesPerView": "auto",
+            "spaceBetween": 20
+          },
+          "1024": {
+            "slidesPerView": "auto",
+            "spaceBetween": 20
+          }
+        }
+      }
+  {%- endcapture -%}
+
+  <div class="tpt-section_container">
+    <div class="tpt-section_content">
+      <div class="tpt-image-slide">
+        {% comment %} Section header {% endcomment %}
+        {%- render 'tpt-section-header', section: section -%}
+
+        <div class="tpt-section-body">
+          {% comment %} Section body {% endcomment %}
+          <tpt-slider class="tpt-image-slide-slider">
+            <tpt-slider-options class="hidden">
+              {{ slider_options }}
+            </tpt-slider-options>
+  
+            <div class="tpt-image-slide-container" style="--item-border-radius: {{ section.settings.border_radius }}px; --image-height: {{ section.settings.image_height }}px; --mobile-image-height: {{ section.settings.mobile_image_height | default: section.settings.image_height }}px">
+              <div class="tpt-swiper-container">
+                <div class="swiper">
+                  <div class="swiper-wrapper">
+                    {%- for block in section.blocks -%}
+                      <div class="swiper-slide">
+                        {% if block.settings.image %}
+                          <div class="tpt-image-slide-item">
+                            {% comment %} Determine which image to use {% endcomment %}
+                            {%- assign desktop_image = block.settings.image -%}
+                            {%- assign mobile_image = block.settings.mobile_image | default: desktop_image -%}
+                            
+                            {% comment %} Desktop image {% endcomment %}
+                            <picture class="tpt-responsive-image">
+                              <source media="(min-width: 768px)" 
+                                      srcset="{{ desktop_image | image_url: height: section.settings.image_height }}">
+                              <source media="(max-width: 767px)" 
+                                      srcset="{{ mobile_image | image_url: height: section.settings.mobile_image_height | default: section.settings.image_height }}">
+                              <img src="{{ desktop_image | image_url: height: section.settings.image_height }}" 
+                                   alt="{{ block.settings.image_alt | default: shop.name }}"
+                                   loading="lazy"
+                                   sizes="(min-width: 768px) 100vw, (max-width: 767px) 100vw"
+                                   width="{{ desktop_image.width }}"
+                                   height="{{ section.settings.image_height }}">
+                            </picture>
+                          </div>
+                        {% endif %}
+                      </div>
+                    {%- endfor -%}
+                  </div>
+                </div>
+              </div>
+              <div class="swiper-paginations tpt-swiper-paginations"></div>
+            </div>
+          </tpt-slider>
+          
+          {% comment %} End section body {% endcomment %}
+        </div>
+      </div>
+
+      {% comment %} Section footer {% endcomment %}
+      {%- render 'tpt-section-footer', section: section -%}
+    </div>
+  </div>
+{%- endif -%}{%- unless content_for_header contains 'tapita-section-script-tags' -%}{% style %}#shopify-section-{{ section.id }}{display: none !important;}{% endstyle %}{%- endunless -%}
+
+
+{% schema %}
+{
+  "name": "Tpt - Image slider",
+  "tag": "section",
+  "class": "section tpt-section",
+  "disabled_on": {
+      "groups": [
+          "header",
+          "footer"
+      ]
+  },
+  "settings": [
+      {
+          "type": "header",
+          "content": "Section header"
+      },
+      {
+          "type": "inline_richtext",
+          "id": "heading",
+          "label": "Heading"
+      },
+      {
+          "type": "select",
+          "id": "heading_size",
+          "label": "Heading size",
+          "options": [
+              {
+                  "value": "h4",
+                  "label": "Small"
+              },
+              {
+                  "value": "h2",
+                  "label": "Medium"
+              },
+              {
+                  "value": "h0",
+                  "label": "Large"
+              }
+          ],
+          "default": "h2"
+      },
+      {
+          "type": "inline_richtext",
+          "id": "sub_heading",
+          "label": "Sub-heading",
+          "default": "Image"
+      },
+      {
+          "type": "richtext",
+          "id": "description",
+          "label": "Description"
+      },
+      {
+          "type": "select",
+          "id": "alignment",
+          "label": "Alignment",
+          "options": [
+              {
+                  "value": "default",
+                  "label": "Default"
+              },
+              {
+                  "value": "center",
+                  "label": "Center"
+              }
+          ],
+          "default": "center"
+      },
+      {
+          "type": "text",
+          "id": "top_button_label",
+          "label": "Button label"
+      },
+      {
+          "type": "url",
+          "id": "top_button_link",
+          "label": "Button link"
+      },
+      {
+          "type": "header",
+          "content": "Section body"
+      },
+      {
+        "type": "range",
+        "id": "border_radius",
+        "min": 0,
+        "max": 100,
+        "step": 1,
+        "label": "Border radius",
+        "default": 32
+      },
+      {
+        "type": "range",
+        "id": "image_height",
+        "min": 200,
+        "max": 1200,
+        "step": 10,
+        "label": "Desktop image height (px)",
+        "default": 600
+      },
+      {
+        "type": "range",
+        "id": "mobile_image_height",
+        "min": 200,
+        "max": 800,
+        "step": 10,
+        "label": "Mobile image height (px)",
+        "default": 400
+      },
+      {
+          "type": "header",
+          "content": "Section layout"
+      },
+      {
+          "type": "image_picker",
+          "id": "background_image",
+          "label": "Background image"
+      },
+      {
+          "type": "checkbox",
+          "id": "section_full_width",
+          "label": "Section full width",
+          "default": true
+      },
+      {
+          "type": "range",
+          "id": "section_max_width",
+          "min": 1200,
+          "max": 1900,
+          "step": 20,
+          "unit": "px",
+          "label": "Section max width",
+          "default": 1600
+      },
+      {
+          "type": "checkbox",
+          "id": "content_full_width",
+          "label": "Content full width",
+          "default": false
+      },
+      {
+          "type": "range",
+          "id": "content_max_width",
+          "min": 800,
+          "max": 1900,
+          "step": 20,
+          "unit": "px",
+          "label": "Content max width",
+          "default": 1440
+      },
+      {
+          "type": "range",
+          "id": "padding_desktop",
+          "min": 0,
+          "max": 100,
+          "step": 2,
+          "unit": "px",
+          "label": "Padding desktop",
+          "default": 0
+      },
+      {
+          "type": "range",
+          "id": "padding_tablet_mobile",
+          "min": 0,
+          "max": 40,
+          "step": 1,
+          "unit": "px",
+          "label": "Padding tablet, mobile",
+          "default": 0
+      },
+      {
+          "type": "range",
+          "id": "margin_desktop",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "px",
+          "label": "Margin desktop",
+          "default": 60
+      },
+      {
+          "type": "range",
+          "id": "margin_tablet_mobile",
+          "min": 0,
+          "max": 100,
+          "step": 1,
+          "unit": "px",
+          "label": "Margin tablet, mobile",
+          "default": 40
+      },
+      {
+          "type": "header",
+          "content": "Section color"
+      },
+      {
+          "type": "color",
+          "id": "background_color",
+          "label": "Background",
+          "default": "#FFFFFF"
+      },
+      {
+          "type": "color_background",
+          "id": "background_gradient_color",
+          "label": "Background gradient"
+      },
+      {
+          "type": "color",
+          "id": "title_color",
+          "label": "Title",
+          "default": "#000000"
+      },
+      {
+          "type": "color",
+          "id": "button_background_color",
+          "label": "Button background",
+          "default": "#000000"
+      },
+      {
+          "type": "color",
+          "id": "button_text_color",
+          "label": "Button text",
+          "default": "#ffffff"
+      },
+      {
+          "type": "color",
+          "id": "foreground_color",
+          "label": "Foreground",
+          "default": "#000000"
+      },
+      {
+          "type": "header",
+          "content": "Section optimize"
+      },
+      {
+          "type": "checkbox",
+          "id": "section_lazyload",
+          "label": "Section lazyload",
+          "default": false
+      }
+  ],
+  "blocks": [
+    {
+      "type": "image",
+      "name": "Image",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Desktop image"
+        },
+        {
+          "type": "image_picker",
+          "id": "mobile_image",
+          "label": "Mobile image (optional)"
+        },
+        {
+          "type": "text",
+          "id": "image_alt",
+          "label": "Image alt text (optional)"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {"name": "Tpt - Image slider"}
+  ]
+} 
+{% endschema %}

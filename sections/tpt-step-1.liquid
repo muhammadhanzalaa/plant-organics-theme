@@ -1,0 +1,558 @@
+
+
+
+
+
+{% comment %} Section layout style {% endcomment %}
+{{ 'tpt-section.css' | asset_url | stylesheet_tag }}
+
+{% comment %} Section configuration {% endcomment %}
+{%- render 'tpt-section-setting', section: section -%}
+
+<style>
+  .tpt-steps-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: center;
+  }
+
+  .tpt-steps-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .tpt-step-item {
+    display: flex;
+    gap: 24px;
+    position: relative;
+    padding-bottom: 40px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .tpt-step-item:last-child {
+    padding-bottom: 0;
+  }
+
+  .tpt-step-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: 23px;
+    top: 56px;
+    width: 2px;
+    height: calc(100% - 56px);
+    background: linear-gradient(to bottom, var(--step-line-color, #e0e0e0) 0%, transparent 100%);
+  }
+
+  .tpt-step-number {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: var(--step-number-inactive-bg, #e0e0e0);
+    color: var(--step-number-inactive-color, #9ca3af);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 700;
+    z-index: 1;
+    transition: all 0.3s ease;
+  }
+
+  .tpt-step-item.active .tpt-step-number {
+    background: var(--step-number-bg, #6366f1);
+    color: var(--step-number-color, #ffffff);
+    animation: pulse 1.25s cubic-bezier(0.215, 0.61, 0.355, 1) 0s infinite normal none running;
+  }
+
+  .tpt-step-content h3 {
+    margin: 0 0 8px 0;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--step-title-color, #000000);
+    transition: color 0.3s ease;
+    opacity: 0.6;
+  }
+
+  .tpt-step-item.active .tpt-step-content h3 {
+    opacity: 1;
+  }
+
+  .tpt-step-description-wrapper {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows 0.4s ease-out;
+  }
+
+  .tpt-step-item.active .tpt-step-description-wrapper {
+    grid-template-rows: 1fr;
+  }
+
+  .tpt-step-description-inner {
+    overflow: hidden;
+  }
+
+  .tpt-step-content p {
+    margin: 0;
+    padding-top: 4px;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--step-text-color, #6b7280);
+  }
+
+  .tpt-steps-media {
+    position: sticky;
+    top: 20px;
+    border-radius: var(--media-border-radius, 16px);
+    overflow: hidden;
+    aspect-ratio: 4/3;
+    background: #f3f4f6;
+  }
+
+  .tpt-media-item {
+    width: 100%;
+    height: 100%;
+    display: none;
+    animation: fadeIn 0.5s ease;
+  }
+
+  .tpt-media-item.active {
+    display: block;
+  }
+
+  .tpt-media-item img,
+  .tpt-media-item video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @media screen and (max-width: 989px) {
+    .tpt-steps-container {
+      grid-template-columns: 1fr;
+      gap: 40px;
+    }
+    .tpt-steps-media {
+      position: relative;
+      top: 0;
+      order: -1;
+    }
+    .tpt-step-content h3 {
+      font-size: 24px;
+    }
+    .tpt-step-number {
+      width: 40px;
+      height: 40px;
+      font-size: 20px;
+    }
+    .tpt-step-item:not(:last-child)::after {
+      left: 19px;
+      top: 48px;
+      height: calc(100% - 48px);
+    }
+  }
+  .placeholder-svg {
+    width: 100%;
+    height: 100%;
+  }
+  @keyframes pulse {
+    0% {
+      box-shadow: 0 0 0 0 var(--step-number-bg, #6366f1);
+    }
+    70% {
+      box-shadow: 0 0 0 10px transparent;
+    }
+    100% {
+      box-shadow: 0 0 0 0 transparent;
+    }
+  }
+</style>
+
+{%- if section.index and section.settings.section_lazyload -%}
+  <script src="{{ 'tpt-section-lazyload.js' | asset_url }}" defer="defer"></script>
+  <tpt-section-lazyload data-url="?section_id={{ section.id }}">
+    <div data-lazyload-element></div>
+    <span class="tpt-section_loader"></span>
+  </tpt-section-lazyload>
+{%- else -%}
+  <div
+    class="tpt-section_container"
+    id="tpt-step-section-{{ section.id }}"
+    style="
+      --step-number-bg: {{ section.settings.step_number_bg }};
+      --step-number-color: {{ section.settings.step_number_color }};
+      --step-number-inactive-bg: {{ section.settings.step_number_inactive_bg }};
+      --step-number-inactive-color: {{ section.settings.step_number_inactive_color }};
+      --step-line-color: {{ section.settings.step_line_color }};
+      --step-title-color: {{ section.settings.step_title_color }};
+      --step-text-color: {{ section.settings.step_text_color }};
+      --media-border-radius: {{ section.settings.media_border_radius }}px;
+    "
+  >
+    <div class="tpt-section_content">
+      {% comment %} Section header {% endcomment %}
+      {%- render 'tpt-section-header', section: section -%}
+
+      <div class="tpt-section-body">
+        <div class="tpt-steps-container">
+          <div class="tpt-steps-list">
+            {%- for block in section.blocks -%}
+              <div
+                class="tpt-step-item {% if forloop.first %}active{% endif %}"
+                {{ block.shopify_attributes }}
+                data-index="{{ forloop.index0 }}"
+              >
+                <div class="tpt-step-number">
+                  {{ forloop.index }}
+                </div>
+
+                <div class="tpt-step-content">
+                  {%- if block.settings.title != blank -%}
+                    <h3>{{ block.settings.title }}</h3>
+                  {%- endif -%}
+
+                  <div class="tpt-step-description-wrapper">
+                    <div class="tpt-step-description-inner">
+                      {%- if block.settings.description != blank -%}
+                        <p>{{ block.settings.description }}</p>
+                      {%- endif -%}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            {%- endfor -%}
+          </div>
+
+          {% comment %} Media Area {% endcomment %}
+          <div class="tpt-steps-media">
+            {%- for block in section.blocks -%}
+              <div
+                class="tpt-media-item {% if forloop.first %}active{% endif %}"
+                data-media-index="{{ forloop.index0 }}"
+              >
+                {%- if block.settings.video != blank -%}
+                  {%- assign video_source = block.settings.video.sources | where: 'format', 'mp4' | first -%}
+
+                  <video
+                    autoplay
+                    muted
+                    loop
+                    playsinline
+                    {% if block.settings.image != blank %}
+                      poster="{{ block.settings.image | image_url: width: 1200 }}"
+                    {% else %}
+                      poster="{{ block.settings.video.preview_image | image_url: width: 1200 }}"
+                    {% endif %}
+                  >
+                    <source src="{{ video_source.url }}" type="video/mp4">
+                  </video>
+
+                {%- elsif block.settings.image != blank -%}
+                  {{ block.settings.image | image_url: width: 1200 | image_tag: loading: 'lazy' }}
+                {%- else -%}
+                  {{ 'image' | placeholder_svg_tag: 'placeholder-svg' }}
+                {%- endif -%}
+              </div>
+            {%- endfor -%}
+          </div>
+        </div>
+      </div>
+
+      {% comment %} Section footer {% endcomment %}
+      {%- render 'tpt-section-footer', section: section -%}
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      function initTptStepSection(sectionId) {
+        const containerId = 'tpt-step-section-' + sectionId;
+        const sectionContainer = document.getElementById(containerId);
+        if (!sectionContainer) return;
+
+        const steps = sectionContainer.querySelectorAll('.tpt-step-item');
+        const medias = sectionContainer.querySelectorAll('.tpt-media-item');
+
+        function setActive(index) {
+          steps.forEach((s) => s.classList.remove('active'));
+          medias.forEach((m) => m.classList.remove('active'));
+
+          if (steps[index]) steps[index].classList.add('active');
+
+          if (medias[index]) {
+            medias[index].classList.add('active');
+            const video = medias[index].querySelector('video');
+            if (video) {
+              video.currentTime = 0;
+              video.play().catch((e) => console.log('Auto-play prevented'));
+            }
+          }
+        }
+
+        steps.forEach((step) => {
+          step.addEventListener('click', function () {
+            const index = this.getAttribute('data-index');
+            setActive(index);
+          });
+        });
+
+        if (window.Shopify && Shopify.designMode) {
+          sectionContainer.removeEventListener('shopify:block:select', handleBlockSelect);
+
+          function handleBlockSelect(event) {
+            const blockId = event.detail.blockId;
+            const selectedStep = sectionContainer.querySelector(`.tpt-step-item[data-block-id="${blockId}"]`);
+
+            steps.forEach((s, i) => {
+              if (s.getAttribute('data-shopify-editor-block-id') === blockId) {
+                setActive(i);
+              }
+            });
+          }
+
+          document.addEventListener('shopify:block:select', handleBlockSelect);
+        }
+      }
+
+      document.addEventListener('DOMContentLoaded', function () {
+        initTptStepSection('{{ section.id }}');
+      });
+
+      document.addEventListener('shopify:section:load', function (event) {
+        if (event.detail.sectionId === '{{ section.id }}') {
+          initTptStepSection('{{ section.id }}');
+        }
+      });
+
+      document.addEventListener('shopify:section:unload', function (event) {});
+    })();
+  </script>
+{%- endif -%}{%- unless content_for_header contains 'tapita-section-script-tags' -%}{% style %}#shopify-section-{{ section.id }}{display: none !important;}{% endstyle %}{%- endunless -%}
+
+
+{% schema %}
+{
+  "name": "Tpt - Step #1",
+  "class": "section tpt-section",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Section header"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Three Guiding Steps for Business Success"
+    },
+    {
+      "type": "select",
+      "id": "heading_size",
+      "label": "Heading size",
+      "options": [
+        { "value": "h4", "label": "Small" },
+        { "value": "h2", "label": "Medium" },
+        { "value": "h0", "label": "Large" }
+      ],
+      "default": "h2"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "sub_heading",
+      "label": "Sub-heading"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description",
+      "default": "<p>Manage your business effortlessly with our streamlined tools.</p>"
+    },
+    {
+      "type": "select",
+      "id": "alignment",
+      "label": "Alignment",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "center", "label": "Center" }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "header",
+      "content": "Step colors"
+    },
+    {
+      "type": "color",
+      "id": "step_number_bg",
+      "label": "Active step number background",
+      "default": "#6366F1"
+    },
+    {
+      "type": "color",
+      "id": "step_number_color",
+      "label": "Active step number color",
+      "default": "#FFFFFF"
+    },
+    {
+      "type": "color",
+      "id": "step_number_inactive_bg",
+      "label": "Inactive step number background",
+      "default": "#E0E0E0"
+    },
+    {
+      "type": "color",
+      "id": "step_number_inactive_color",
+      "label": "Inactive step number color",
+      "default": "#9CA3AF"
+    },
+    {
+      "type": "color",
+      "id": "step_line_color",
+      "label": "Step line color",
+      "default": "#E0E0E0"
+    },
+    {
+      "type": "color",
+      "id": "step_title_color",
+      "label": "Step title color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "step_text_color",
+      "label": "Step text color",
+      "default": "#6B7280"
+    },
+    {
+      "type": "header",
+      "content": "Media settings"
+    },
+    {
+      "type": "range",
+      "id": "media_border_radius",
+      "min": 0,
+      "max": 50,
+      "step": 2,
+      "unit": "px",
+      "label": "Media border radius",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Section layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "section_full_width",
+      "label": "Section full width",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "section_max_width",
+      "min": 1200,
+      "max": 1900,
+      "step": 20,
+      "unit": "px",
+      "label": "Section max width",
+      "default": 1600
+    },
+    {
+      "type": "range",
+      "id": "padding_desktop",
+      "min": 0,
+      "max": 200,
+      "step": 2,
+      "unit": "px",
+      "label": "Padding desktop",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "padding_tablet_mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding tablet, mobile",
+      "default": 40
+    }
+  ],
+  "blocks": [
+    {
+      "type": "step",
+      "name": "Step",
+      "settings": [
+        {
+          "type": "text",
+          "id": "title",
+          "label": "Title",
+          "default": "Step Title"
+        },
+        {
+          "type": "textarea",
+          "id": "description",
+          "label": "Description",
+          "default": "Step description goes here"
+        },
+        {
+          "type": "header",
+          "content": "Media per Step"
+        },
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Step Image"
+        },
+        {
+          "type": "video",
+          "id": "video",
+          "label": "Step Video",
+          "info": "Replaces image if both are set"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Tpt - Step #1",
+      "blocks": [
+        {
+          "type": "step",
+          "settings": {
+            "title": "Organize Contacts Efficiently",
+            "description": "Centralize all client details, including names, emails, and phone numbers, for easy management and quick access anytime."
+          }
+        },
+        {
+          "type": "step",
+          "settings": {
+            "title": "Track Progress Seamlessly",
+            "description": "Monitor your project milestones and key statistics in real-time to stay on top of every task and goal."
+          }
+        },
+        {
+          "type": "step",
+          "settings": {
+            "title": "Engage Smarter",
+            "description": "Leverage data insights to personalize communication, strengthen relationships, and improve outcomes."
+          }
+        }
+      ]
+    }
+  ]
+} 
+{% endschema %}
